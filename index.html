@@ -1,51 +1,75 @@
-<!-- NOVA ABA DE GESTÃO DE ENTREGAS (Substitua a div id="pipeline-tab" anterior por esta) -->
-<div id="pipeline-tab" class="tab-content hidden">
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold">Gestão de Cronogramas</h2>
-        <button class="btn-primary text-sm" onclick="openAddDeadlineModal()">+ Novo Prazo</button>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEOK - CopyCRM & Cronogramas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
+        .glass { background: #1e293b; border: 1px solid #334155; }
+        input { background: #0f172a !important; border: 1px solid #334155 !important; color: white !important; padding: 4px 8px !important; border-radius: 4px; width: 100px; }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">Gestão de Cronogramas SEOK</h1>
+        
+        <div class="glass rounded-lg overflow-x-auto p-6">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-600">
+                        <th class="p-4">Cliente</th>
+                        <th class="p-4">Copy até</th>
+                        <th class="p-4">Arte até</th>
+                        <th class="p-4">Assunto até</th>
+                    </tr>
+                </thead>
+                <tbody id="deadlines-body"></tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="glass rounded-lg overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-[var(--bg-dark)] border-b border-[var(--border)]">
-                    <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Cliente</th>
-                    <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Copy até</th>
-                    <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Arte até</th>
-                    <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Assunto até</th>
-                </tr>
-            </thead>
-            <tbody id="deadlines-table-body" class="divide-y divide-[var(--border)] text-sm"></tbody>
-        </table>
-    </div>
-</div>
+    <script>
+        // BASE DE DADOS DOS 7 CLIENTES
+        const clients = [
+            { id: 1, name: "Agência SEOK" },
+            { id: 2, name: "Content Lab" },
+            { id: 3, name: "Onnafit" },
+            { id: 4, name: "Rainbow Kitchen" },
+            { id: 5, name: "Metapel" },
+            { id: 6, name: "OutBox" },
+            { id: 7, name: "Latam Wellness" }
+        ];
 
-<!-- SCRIPT DE APOIO (Substitua as funções de renderização anteriores pelas novas abaixo) -->
-<script>
-    // Adicione 'deadlines' ao state (pode adicionar dentro de initialState)
-    // state.deadlines = [ { clientId: 1, copy: '20/06', arte: '22/06', assunto: '25/06' }, ... ]
+        // CARREGAR DADOS DO LOCALSTORAGE
+        let deadlines = JSON.parse(localStorage.getItem('seok_deadlines')) || 
+                        clients.map(c => ({ id: c.id, copy: '', arte: '', assunto: '' }));
 
-    const renderPipeline = () => {
-        const tbody = document.getElementById('deadlines-table-body');
-        tbody.innerHTML = state.clients.map(client => {
-            const d = state.deadlines?.find(x => x.clientId === client.id) || { copy: '--/--', arte: '--/--', assunto: '--/--' };
-            return `
-                <tr class="hover:bg-[var(--bg-darker)]">
-                    <td class="p-4 font-bold text-[var(--primary)]">${client.name}</td>
-                    <td class="p-4"><input type="text" class="w-20 bg-transparent border-none p-0 text-sm" value="${d.copy}" onchange="updateDeadline(${client.id}, 'copy', this.value)"></td>
-                    <td class="p-4"><input type="text" class="w-20 bg-transparent border-none p-0 text-sm" value="${d.arte}" onchange="updateDeadline(${client.id}, 'arte', this.value)"></td>
-                    <td class="p-4"><input type="text" class="w-20 bg-transparent border-none p-0 text-sm" value="${d.assunto}" onchange="updateDeadline(${client.id}, 'assunto', this.value)"></td>
-                </tr>
-            `;
-        }).join('');
-    };
+        function renderTable() {
+            const body = document.getElementById('deadlines-body');
+            body.innerHTML = clients.map(client => {
+                const d = deadlines.find(x => x.id === client.id);
+                return `
+                    <tr class="border-b border-slate-700">
+                        <td class="p-4 font-bold text-indigo-400">${client.name}</td>
+                        <td class="p-4"><input type="text" value="${d.copy}" onchange="save(${client.id}, 'copy', this.value)"></td>
+                        <td class="p-4"><input type="text" value="${d.arte}" onchange="save(${client.id}, 'arte', this.value)"></td>
+                        <td class="p-4"><input type="text" value="${d.assunto}" onchange="save(${client.id}, 'assunto', this.value)"></td>
+                    </tr>
+                `;
+            }).join('');
+        }
 
-    const updateDeadline = (clientId, field, value) => {
-        if(!state.deadlines) state.deadlines = [];
-        let d = state.deadlines.find(x => x.clientId === clientId);
-        if(!d) { d = { clientId, copy: '--/--', arte: '--/--', assunto: '--/--' }; state.deadlines.push(d); }
-        d[field] = value;
-        saveState();
-        showToast('Prazo atualizado!');
-    };
-</script>
+        function save(id, field, value) {
+            const item = deadlines.find(x => x.id === id);
+            item[field] = value;
+            localStorage.setItem('seok_deadlines', JSON.stringify(deadlines));
+            console.log(`Salvo: ${field} para cliente ${id}`);
+        }
+
+        renderTable();
+    </script>
+</body>
+</html>
