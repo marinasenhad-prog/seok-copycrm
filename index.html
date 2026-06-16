@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CopyCRM - Seok Advertising</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Variáveis de Tema */
+        :root[data-theme="dark"] {
+            --bg-darker: #0a0e27;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --input-bg: #0f172a;
+        }
+
+        :root[data-theme="light"] {
+            --bg-darker: #f1f5f9;
+            --bg-dark: #ffffff;
+            --bg-card: #ffffff;
+            --border: #cbd5e1;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #7c3aed;
+            --input-bg: #f8fafc;
+        }
+
+        body {
+            background-color: var(--bg-darker);
+            color: var(--text);
+        }
+
+        .bg-sidebar { background-color: var(--bg-dark); }
+        .bg-main-card { background-color: var(--bg-card); }
+        .border-theme { border-color: var(--border); }
+        .text-theme { color: var(--text); }
+        .text-muted-theme { color: var(--text-muted); }
+        .input-theme { background-color: var(--input-bg); color: var(--text); border-color: var(--border); }
+
+        /* Estilização da barra de rolagem */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        /* Toast styles */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 100; }
+        .toast {
+            padding: 12px 24px; border-radius: 8px; font-weight: 500; margin-top: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s ease forwards;
+        }
+        .toast.success { background-color: #10b981; color: white; }
+        .toast.info { background-color: var(--primary); color: white; }
+
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body class="min-h-screen flex overflow-hidden">
+
+    <div id="toast-container"></div>
+
+    <aside class="w-80 bg-sidebar border-r border-theme flex flex-col justify-between z-10">
+        <div>
+            <div class="p-6 border-b border-theme flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <svg id="crm-logo" class="w-9 h-9" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logo-grad-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#6366f1" />
+                                <stop offset="50%" stop-color="#8b5cf6" />
+                                <stop offset="100%" stop-color="#ec4899" />
+                            </linearGradient>
+                            <linearGradient id="logo-grad-light" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#3730a3" />
+                                <stop offset="50%" stop-color="#4f46e5" />
+                                <stop offset="100%" stop-color="#7c3aed" />
+                            </linearGradient>
+                        </defs>
+                        <polygon points="50,5 90,28 90,72 50,95 10,72 10,28" class="theme-logo-poly" stroke-width="6" stroke="url(#logo-grad-dark)" fill="none"/>
+                        <path d="M35 45 C 35 30, 65 30, 65 45 C 65 55, 35 60, 35 75 L 65 75" stroke="url(#logo-grad-dark)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" class="theme-logo-path"/>
+                    </svg>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-tight text-theme">CopyCRM</h1>
+                        <p class="text-xs font-medium text-muted-theme">Seok Advertising</p>
+                    </div>
+                </div>
+                
+                <button onclick="toggleTheme()" class="p-2 rounded-lg border border-theme hover:bg-gray-100 dark:hover:bg-slate-800 text-theme transition" title="Alternar Tema">
+                    <svg id="theme-icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M7.757 6.364l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+                    <svg id="theme-icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+            </div>
+
+            <nav class="p-4 space-y-1">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition bg-indigo-600 text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"></path></svg>
+                    Dashboard Operacional
+                </button>
+                <button onclick="switchTab('generator')" id="nav-generator" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition text-muted-theme hover:bg-slate-800/50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    Gerador AI de Copy
+                </button>
+            </nav>
+
+            <div class="px-6 py-4">
+                <label class="text-xs font-bold uppercase tracking-wider text-muted-theme block mb-2">Dossiês Estratégicos Ativos</label>
+                <select id="client-intel-selector" onchange="loadClientIntel()" class="w-full px-3 py-2 rounded-lg border input-theme text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">-- Selecione para ver dados do JSON --</option>
+                    <option value="seok">SEOK (Agência SEOK)</option>
+                    <option value="content_lab">Content Lab</option>
+                    <option value="onnafit">Onnafit (Beauty & Health)</option>
+                    <option value="rainbow_kitchen">Rainbow Kitchen</option>
+                    <option value="metapel">Metapel Healthtech</option>
+                    <option value="outbox">OutBox Treinamento</option>
+                    <option value="latam_wellness">Latam Wellness (Starpool)</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="intel-side-panel" class="p-4 m-4 rounded-xl border border-theme bg-main-card hidden max-h-64 overflow-y-auto">
+            <h4 class="text-xs font-bold uppercase text-indigo-500 mb-1">UVP / Posicionamento</h4>
+            <p id="intel-uvp-text" class="text-xs text-theme mb-3 leading-relaxed"></p>
+            <h4 class="text-xs font-bold uppercase text-purple-500 mb-1">Público Alvo (ICP)</h4>
+            <p id="intel-icp-text" class="text-xs text-theme leading-relaxed"></p>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        
+        <div id="tab-dashboard" class="flex-1 flex overflow-hidden">
+            <div class="flex-1 p-8 overflow-y-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-theme tracking-tight">Pipeline de Criação de Conteúdo</h2>
+                        <p class="text-sm text-muted-theme">Gerencie o fluxo de aprovação das suas copies e estratégias táticas.</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <input type="text" id="item-title" placeholder="Título da demanda..." class="px-4 py-2 rounded-lg border input-theme text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64">
+                        <button onclick="addPipelineItem()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition shadow-md">
+                            Criar Demanda
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="rounded-xl bg-main-card border border-theme p-4 flex flex-col max-h-[75vh]">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-theme">
+                            <span class="font-semibold text-sm text-theme flex items-center gap-2">📂 Backlog/Briefing</span>
+                            <span id="count-backlog" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-bold">0</span>
+                        </div>
+                        <div id="stage-backlog" class="space-y-3 overflow-y-auto flex-1 min-h-[150px]" ondragover="allowDrop(event)" ondrop="drop(event, 'backlog')"></div>
+                    </div>
+
+                    <div class="rounded-xl bg-main-card border border-theme p-4 flex flex-col max-h-[75vh]">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-theme">
+                            <span class="font-semibold text-sm text-amber-500 flex items-center gap-2">✍️ Em Produção</span>
+                            <span id="count-progress" class="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 font-bold">0</span>
+                        </div>
+                        <div id="stage-progress" class="space-y-3 overflow-y-auto flex-1 min-h-[150px]" ondragover="allowDrop(event)" ondrop="drop(event, 'progress')"></div>
+                    </div>
+
+                    <div class="rounded-xl bg-main-card border border-theme p-4 flex flex-col max-h-[75vh]">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-theme">
+                            <span class="font-semibold text-sm text-purple-500 flex items-center gap-2">👀 Validação Interna</span>
+                            <span id="count-review" class="text-xs px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-500 font-bold">0</span>
+                        </div>
+                        <div id="stage-review" class="space-y-3 overflow-y-auto flex-1 min-h-[150px]" ondragover="allowDrop(event)" ondrop="drop(event, 'review')"></div>
+                    </div>
+
+                    <div class="rounded-xl bg-main-card border border-theme p-4 flex flex-col max-h-[75vh]">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-theme">
+                            <span class="font-semibold text-sm text-emerald-500 flex items-center gap-2">🚀 Pronto / Agendado</span>
+                            <span id="count-done" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-bold">0</span>
+                        </div>
+                        <div id="stage-done" class="space-y-3 overflow-y-auto flex-1 min-h-[150px]" ondragover="allowDrop(event)" ondrop="drop(event, 'done')"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-generator" class="flex-1 p-8 overflow-y-auto hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-theme tracking-tight">Gerador AI de Alta Conversão</h2>
+                    <p class="text-sm text-muted-theme">Gere copys altamente alinhadas com o briefing de posicionamento estratégico de cada cliente.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="md:col-span-1 space-y-5">
+                        <div class="p-5 rounded-xl bg-main-card border border-theme space-y-4 shadow-sm">
+                            <div>
+                                <label class="text-xs font-bold text-theme uppercase tracking-wider block mb-1.5">Cliente Selecionado</label>
+                                <select id="generator-client" onchange="syncGeneratorClient()" class="w-full px-3 py-2 rounded-lg border input-theme text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="seok">SEOK (Agência SEOK)</option>
+                                    <option value="content_lab">Content Lab</option>
+                                    <option value="onnafit">Onnafit (Beauty & Health)</option>
+                                    <option value="rainbow_kitchen">Rainbow Kitchen</option>
+                                    <option value="metapel">Metapel Healthtech</option>
+                                    <option value="outbox">OutBox Treinamento</option>
+                                    <option value="latam_wellness">Latam Wellness (Starpool)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-bold text-theme uppercase tracking-wider block mb-1.5">Formato de Saída</label>
+                                <select id="generator-format" class="w-full px-3 py-2 rounded-lg border input-theme text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="Carrossel Estratégico">Carrossel Estratégico (Slide a Slide)</option>
+                                    <option value="Reels/Vídeo Curto Dinâmico">Reels / Roteiro de Vídeo Curto</option>
+                                    <option value="Sequência de Stories de Venda">Sequência de Stories de Conversão</option>
+                                    <option value="Legenda Direta de Feed">Legenda Direta de Feed (Inbound)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-bold text-theme uppercase tracking-wider block mb-1.5">Objetivo ou Tema Central</label>
+                                <textarea id="generator-topic" rows="4" placeholder="Ex: Quebrar a objeção de que agências tradicionais não se importam com lucro real e conversão..." class="w-full px-3 py-2 rounded-lg border input-theme text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+                            </div>
+
+                            <button onclick="generateCopyPrompt()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition tracking-wide text-sm flex items-center justify-center gap-2 shadow-md">
+                                ✨ Estruturar Prompt Refinado
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-6">
+                        <div id="output-state" class="p-6 rounded-xl bg-main-card border border-theme space-y-4 shadow-sm hidden">
+                            <div class="flex items-center justify-between border-b border-theme pb-3">
+                                <span class="text-sm font-bold text-indigo-500 uppercase tracking-wider flex items-center gap-2">🚀 Prompt Pronto para a AI</span>
+                                <button onclick="copyToClipboard('generated-copy')" class="text-xs px-3 py-1.5 rounded bg-slate-800 text-indigo-400 hover:text-indigo-300 font-semibold transition border border-theme flex items-center gap-1">
+                                    📋 Copiar Prompt
+                                </button>
+                            </div>
+                            <textarea id="generated-copy" rows="16" class="w-full p-4 rounded-xl border input-theme text-xs font-mono leading-relaxed focus:outline-none" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // BASE DATASET DIRECTLY FROM ORIGINAL JSON STRATEGIC FILES
+        const CLIENTS_INTEL_DATABASE = {
+            seok: {
+                name: "SEOK (Agência SEOK)",
+                uvp: "Estratégia orientada a dados e realidade operacional. Não entrega estética ou métricas de vaidade, mas audita gargalos comerciais, foca em conversão real e aplica inteligência de mercado para posicionar marcas no topo da categoria.",
+                icp: "Empresários, fundadores e sócios que faturam acima de R$ 50 mil a R$ 100 mil mensais. Decisores ocupados, envolvidos com a operação e liderança que valorizam lucro real acima de likes.",
+                pilares: "Tradução de Movimentos Macro (WGSN); Estratégia & Quebra de Objeções (Frameworks 5 Porquês, How Might We); Cases de Mercado e Engenharia Reversa (Audi, Ferrari, Meta, Zara).",
+                ctas: "Clica no link da bio, faz seu diagnóstico gratuito e rápido, e me conta aqui nos comentários; Manda esse post para o seu sócio ou quem divide o comando com você.",
+                estetica: "Abordagem Lo-Fi e autêntica ganha da superprodução plástica. Conteúdo 'cru' que gera conexão rápida e humana, desmistificando o visual engessado corporativo."
+            },
+            content_lab: {
+                name: "Content Lab",
+                uvp: "Unir marcas e criadores com intencionalidade estratégica, fugindo da publicidade engessada (panfletagem) e criando pontes reais que geram desejo e ação orgânica dentro do contexto de cada comunidade.",
+                icp: "Gestores de marketing, CMOs, estrategistas de social media de grandes marcas (ex: Gillette, Taco Bell) e criadores de conteúdo (influenciadores).",
+                pilares: "Análise de Cases (Desconstrução profunda da estratégia/psicologia de parcerias); Agenda Sazonal/Cultural; Apoio e Valorização da Comunidade (iBest, fortalecimento do squad).",
+                ctas: "Salvar para usar de referência em curadoria/planejamento; Compartilhar/Enviar o insight para a equipe ou colegas de mercado.",
+                estetica: "Carrosséis narrativos para dissecar cases (focados na anatomia do comportamento). Estética que remeta a relatórios de tendências ou editoriais, mesclando dados e assets."
+            },
+            onnafit: {
+                name: "Onnafit (Beauty & Health)",
+                uvp: "Tecnologia de eletroestimulação muscular avançada que atua como um Tratamento Sistêmico (Full Body). Promove hipertrofia passiva, drenagem e recuperação profunda sem impacto articular, potencializando o ecossistema 360º das clínicas.",
+                icp: "B2B: Donos de clínicas de estética, esteticistas avançados e gestores premium. B2B2C: Mulheres no pós-parto, pacientes com lipedema, flacidez pós-emagrecimento rápido (Ozempic) e recuperação esportiva.",
+                pilares: "Estética Científica e Prática Baseada em Evidências; Nichos Clínicos Rentáveis e Seguros (Pós-parto, diástase, Lipedema); Ecossistema 360º e Fidelização (LTV); Integração Tecnológica.",
+                ctas: "Acesse o link da bio e converse com a nossa equipe especializada; Eleve a inteligência clínica do seu portfólio.",
+                estetica: "Estética premium, limpa e elegante. Uso de carrosséis educativos estruturados metodicamente (problema -> agravante -> solução técnica -> benefício -> CTA). Legendas enxutas."
+            },
+            rainbow_kitchen: {
+                name: "Rainbow Kitchen",
+                uvp: "Nutrição escolar estratégica focada na abordagem 'whole foods' e estabilização metabólica para maximizar o rendimento pedagógico. Seleção rigorosa de ingredientes frescos, eliminando sucos em prol de hidratação pura (água) e frutas in natura.",
+                icp: "Diretores e gestores de escolas de alto padrão; famílias e pais de elevado poder de compra que valorizam o desenvolvimento cognitivo/infantil, saúde e transparência.",
+                pilares: "Impacto neurocomportamental da nutrição (sugar crash vs. foco); O refeitório como hub de comunidade; Resiliência de paladar infantil; Rastreabilidade e gestão de riscos.",
+                ctas: "Direcionamento para o link na bio (aprofundamento na ciência nutricional); Envio de DM para conversas consultivas B2B.",
+                estetica: "Estética clean, autêntica e lo-fi para gerar conexão rápida (ex: motions de Post-its com ganchos curtos e efetivos). Foco em profundidade estratégica e simplicidade."
+            },
+            metapel: {
+                name: "Metapel",
+                uvp: "Hub tecnológico que conecta profissionais de saúde (enfermeiros, técnicos e cuidadores) diretamente a famílias que buscam assistência domiciliar contínua. Oferece autonomia, transparência e previsibilidade financeira, eliminando a informalidade.",
+                icp: "Enfermeiros(as), Técnicos(as) de Enfermagem e Cuidadores(as) em São Paulo e Grande SP buscando renda complementar ou transição de carreira para a saúde domiciliar.",
+                pilares: "#VagaParaVocê (Atração segmentada); #MercadoDeSaúdeEmCasa (Autoridade, dados de crescimento de 10,9% ao ano); #MetapelNaPrática (UX do app, onboarding, quebra de objeções).",
+                ctas: "Acesse o link da bio e faça o seu cadastro; Baixe o app e crie o seu perfil profissional; Envie seus documentos pelo aplicativo.",
+                estetica: "Priorização de autenticidade e eficácia. Ganchos comportamentais curtos nas capas, relegando dados frios para os slides internos como prova social. Textos curtos e visual simples (lo-fi)."
+            },
+            outbox: {
+                name: "OutBox Treinamento",
+                uvp: "Metodologias vivenciais que tiram a equipe da zona de conforto do escritório para testar a colaboração na prática, treinando o sistema (a engrenagem) e não apenas talentos individuais isolados.",
+                icp: "Líderes corporativos, gestores de RH, C-levels e diretores de empresas que lidam com equipes fragmentadas, falhas de comunicação e alta rotatividade.",
+                pilares: "O custo real da liderança tóxica; Visão sistêmica vs. Individualismo técnico; A ilusão do consenso e o perigo do 'falso sim'; Quebra de silos organizacionais; Atrito construtivo.",
+                ctas: "Quer entender como mapeamos e destravamos isso na prática? Acesse o link da bio; Bora tirar o seu time da rotina? O link pra conhecer nossas imersões está na bio.",
+                estetica: "Carrosséis diretos. Abordagem autêntica e de vida real (lo-fi/conversacional) para gerar conexão rápida com as dores da liderança, fugindo de textos robóticos."
+            },
+            latam_wellness: {
+                name: "Latam Wellness",
+                uvp: "Conceito de 'Longevity Spa': infraestruturas e ecossistemas estruturados baseados em ciência e tecnologia italiana (Starpool) que entregam a reprogramação biológica do corpo através de estímulos precisos de stress controlado e recovery.",
+                icp: "B2B: Arquitetos de alto padrão, donos de clínicas médicas, investidores, hotelaria e spas premium. Cliente final: Indivíduos de alta performance e rotina intensa.",
+                pilares: "Os 4 Pilares da Starpool (Stress, Sono, Performance, Longevidade); Arquitetura e Design Sensorial; Recovery como Posicionamento Comercial; Otimização de Tempo.",
+                ctas: "Acesse o link da bio e descubra como integrar essa solução ao seu negócio; Fale com a nossa equipe; Distribuidora oficial Starpool no Brasil. MADE IN ITALY.",
+                estetica: "Carrosséis textuais com arquitetura de informação baseada em quebra de expectativa e progressão lógica. Vídeos de alta qualidade (iluminação âmbar, minimalismo). Textos enxutos."
+            }
+        };
+
+        // PIPELINE ENGINE STATE
+        let pipelineData = {
+            backlog: [],
+            progress: [],
+            review: [],
+            done: []
+        };
+
+        // THEME MANAGEMENT ENGINE
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('crm-theme', newTheme);
+            
+            // UI Toggle Adjustments
+            const sunIcon = document.getElementById('theme-icon-sun');
+            const moonIcon = document.getElementById('theme-icon-moon');
+            const logoPoly = document.querySelector('.theme-logo-poly');
+            const logoPath = document.querySelector('.theme-logo-path');
+            
+            if (newTheme === 'light') {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                logoPoly.setAttribute('stroke', 'url(#logo-grad-light)');
+                logoPath.setAttribute('stroke', 'url(#logo-grad-light)');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                logoPoly.setAttribute('stroke', 'url(#logo-grad-dark)');
+                logoPath.setAttribute('stroke', 'url(#logo-grad-dark)');
+            }
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('crm-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const sunIcon = document.getElementById('theme-icon-sun');
+            const moonIcon = document.getElementById('theme-icon-moon');
+            const logoPoly = document.querySelector('.theme-logo-poly');
+            const logoPath = document.querySelector('.theme-logo-path');
+
+            if (savedTheme === 'light') {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                if(logoPoly) logoPoly.setAttribute('stroke', 'url(#logo-grad-light)');
+                if(logoPath) logoPath.setAttribute('stroke', 'url(#logo-grad-light)');
+            } else {
+                if(sunIcon) sunIcon.classList.add('hidden');
+                if(moonIcon) moonIcon.classList.remove('hidden');
+                if(logoPoly) logoPoly.setAttribute('stroke', 'url(#logo-grad-dark)');
+                if(logoPath) logoPath.setAttribute('stroke', 'url(#logo-grad-dark)');
+            }
+        }
+
+        // TAB NAVIGATION ROUTER
+        function switchTab(tabId) {
+            document.getElementById('tab-dashboard').classList.add('hidden');
+            document.getElementById('tab-generator').classList.add('hidden');
+            document.getElementById('nav-dashboard').className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition text-muted-theme hover:bg-slate-800/50";
+            document.getElementById('nav-generator').className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition text-muted-theme hover:bg-slate-800/50";
+
+            if (tabId === 'dashboard') {
+                document.getElementById('tab-dashboard').classList.remove('hidden');
+                document.getElementById('nav-dashboard').className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition bg-indigo-600 text-white";
+            } else {
+                document.getElementById('tab-generator').classList.remove('hidden');
+                document.getElementById('nav-generator').className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition bg-indigo-600 text-white";
+            }
+        }
+
+        // DATA SYNCHRONIZATION FROM JSON AT SELECTORS
+        function loadClientIntel() {
+            const selector = document.getElementById('client-intel-selector');
+            const panel = document.getElementById('intel-side-panel');
+            const uvpText = document.getElementById('intel-uvp-text');
+            const icpText = document.getElementById('intel-icp-text');
+            
+            const clientKey = selector.value;
+            if (!clientKey || !CLIENTS_INTEL_DATABASE[clientKey]) {
+                panel.classList.add('hidden');
+                return;
+            }
+
+            const data = CLIENTS_INTEL_DATABASE[clientKey];
+            uvpText.textContent = data.uvp;
+            icpText.textContent = data.icp;
+            panel.classList.remove('hidden');
+            
+            // Auto sync with the AI generator client selector if it's open
+            document.getElementById('generator-client').value = clientKey;
+            showToast(`Dossiê de ${data.name} carregado!`, 'info');
+        }
+
+        function syncGeneratorClient() {
+            const genClientKey = document.getElementById('generator-client').value;
+            document.getElementById('client-intel-selector').value = genClientKey;
+            loadClientIntel();
+        }
+
+        // PROMPT ARCHITECTURE ENGINE (CRISTALIZAÇÃO DE PROMPT COMPLETO)
+        function generateCopyPrompt() {
+            const clientKey = document.getElementById('generator-client').value;
+            const format = document.getElementById('generator-format').value;
+            const topic = document.getElementById('generator-topic').value || "Não especificado (Aproveite as dores do DNA da marca).";
+            
+            const intel = CLIENTS_INTEL_DATABASE[clientKey];
+
+            const complexPrompt = `VOCÊ É UM COPYWRITER SÊNIOR E ESTRATEGISTA DE CONTEÚDO DA SEOK ADVERTISING.
+Seu objetivo é estruturar uma peça de conteúdo impecável seguindo os critérios abaixo:
+
+=== 1. EMBASAMENTO E HISTÓRICO DO DOSSIÊ DO CLIENTE ===
+• Cliente/Marca: ${intel.name}
+• Proposta de Valor Única (UVP): ${intel.uvp}
+• Perfil do Cliente Ideal (ICP): ${intel.icp}
+• Linhas Editoriais e Pilares de Conteúdo: ${intel.pilares}
+• Estética Visual e Tom de Voz Recomendados: ${intel.estetica}
+
+=== 2. DIRETRIZES DA CAMPANHA DE CONTEÚDO ===
+• Formato Exigido: ${format}
+• Tema Central / Objetivo Comercial: ${topic}
+
+=== 3. REGRAS DE EXECUÇÃO OBRIGATÓRIAS ===
+1. Desenvolva o conteúdo aplicando rigorosamente a estética de escrita exigida (${intel.estetica}). Se for Lo-Fi, use frases diretas, ganchos intrigantes e elimine floreios mecânicos ou corporativos chatos. Se for premium, mantenha a elegância cirúrgica.
+2. Construa a estrutura respeitando o formato selecionado (${format}). Se for carrossel, separe explicitamente por slides (Capa impactante, Miolo com progressão lógica, Slide de Fechamento). Se for vídeo, insira as marcações de Áudio e Visual.
+3. Finalize imperativamente com uma das CTAs oficiais do dossiê:
+   -> Opções aceitas para este cliente: ${intel.ctas}
+
+Gere o rascunho completo da copy estruturada (Criativo visual + Legenda texturizada):`;
+
+            document.getElementById('generated-copy').value = complexPrompt;
+            document.getElementById('output-state').classList.remove('hidden');
+            showToast("Prompt estruturado com inteligência de dados!", "success");
+        }
+
+        // KANBAN SYSTEM INTERACTION
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev, id) { ev.dataTransfer.setData("text", id); }
+
+        function drop(ev, targetStage) {
+            ev.preventDefault();
+            const id = ev.dataTransfer.getData("text");
+            
+            let foundItem = null;
+            let currentStage = '';
+            
+            for (const stage in pipelineData) {
+                const idx = pipelineData[stage].findIndex(i => i.id == id);
+                if (idx > -1) {
+                    foundItem = pipelineData[stage].splice(idx, 1)[0];
+                    break;
+                }
+            }
+            
+            if (foundItem) {
+                pipelineData[targetStage].push(foundItem);
+                saveState();
+                renderDashboard();
+                showToast("Demanda movimentada!", "info");
+            }
+        }
+
+        function addPipelineItem() {
+            const titleInput = document.getElementById('item-title');
+            const title = titleInput.value.trim();
+            if (!title) return;
+
+            const clientKey = document.getElementById('client-intel-selector').value || 'seok';
+            const clientName = CLIENTS_INTEL_DATABASE[clientKey].name;
+
+            const newItem = {
+                id: Date.now(),
+                title: `[${clientName.split(' ')[0]}] ${title}`,
+                stage: 'backlog'
+            };
+
+            pipelineData.backlog.push(newItem);
+            titleInput.value = '';
+            saveState();
+            renderDashboard();
+            showToast("Nova demanda inserida no Backlog!", "success");
+        }
+
+        function deleteItem(id) {
+            for (const stage in pipelineData) {
+                const idx = pipelineData[stage].findIndex(i => i.id == id);
+                if (idx > -1) {
+                    pipelineData[stage].splice(idx, 1);
+                    break;
+                }
+            }
+            saveState();
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            const stages = ['backlog', 'progress', 'review', 'done'];
+            stages.forEach(stage => {
+                const container = document.getElementById(`stage-${stage}`);
+                const countContainer = document.getElementById(`count-${stage}`);
+                container.innerHTML = '';
+                
+                pipelineData[stage].forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = "p-4 rounded-xl border border-theme bg-sidebar shadow-sm cursor-grab active:cursor-grabbing hover:border-indigo-500/50 transition relative group";
+                    card.draggable = true;
+                    card.ondragstart = (e) => drag(e, item.id);
+                    card.innerHTML = `
+                        <p class="text-xs font-semibold text-theme pr-6 leading-snug">${item.title}</p>
+                        <button onclick="deleteItem(${item.id})" class="absolute top-3 right-3 text-red-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-16v1a3 3 0 003 3h10M4 7h16"></path></svg>
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+                countContainer.textContent = pipelineData[stage].length;
+            });
+        }
+
+        // LOCAL PERSISTENCE STORAGE
+        function saveState() { localStorage.setItem('copycrm-pipeline-data', JSON.stringify(pipelineData)); }
+        function loadState() {
+            const saved = localStorage.getItem('copycrm-pipeline-data');
+            if (saved) {
+                try { pipelineData = JSON.parse(saved); } catch(e) { console.error(e); }
+            } else {
+                // Mock inicial para não vir vazio se o cliente preferir
+                pipelineData.backlog = [
+                    { id: 1, title: "[SEOK] Carrossel Estratégico - WGSN Macro Trends" },
+                    { id: 2, title: "[Onnafit] Reels Técnico - Protocolo Diástase Pós-Parto" }
+                ];
+            }
+        }
+
+        // UTILITY FUNCTIONS
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).value;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Copiado para a área de transferência!", "success");
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3500);
+        }
+
+        // INITIALIZER
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadState();
+            renderDashboard();
+        });
+    </script>
+</body>
+</html>
