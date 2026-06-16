@@ -4,10 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CopyCRM - Seok Advertising</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Sortable.js (Engine de Drag and Drop do Kanban) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         * {
             font-family: 'Inter', sans-serif;
@@ -108,11 +116,21 @@
             border-radius: 0.5rem;
             padding: 1rem;
             transition: all 0.3s ease;
+            cursor: grab;
+        }
+
+        .kanban-card:active {
+            cursor: grabbing;
         }
 
         .kanban-card:hover {
             border-color: var(--primary);
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: var(--primary);
         }
 
         input, textarea, select {
@@ -148,12 +166,10 @@
             transition: width 0.3s ease;
         }
 
-        /* Context Box Highlight */
         .context-loaded {
             border-left: 4px solid var(--primary);
         }
 
-        /* Toast styles */
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 100; }
         .toast {
             background: var(--toast-bg);
@@ -167,7 +183,6 @@
 
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* Animação Loading */
         @keyframes pulse-soft {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -179,6 +194,7 @@
 
     <div id="app" class="flex-1 flex flex-col">
         
+        <!-- Header -->
         <header class="glass border-b border-t-0 border-l-0 border-r-0 sticky top-0 z-40">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-4">
@@ -199,25 +215,20 @@
                 </div>
 
                 <nav class="hidden md:flex gap-1">
-                    <button data-tab="dashboard" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('dashboard')">
-                        Dashboard
-                    </button>
-                    <button data-tab="pipeline" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('pipeline')">
-                        Pipeline
-                    </button>
-                    <button data-tab="workspace" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('workspace')">
-                        AI Workspace
-                    </button>
+                    <button data-tab="dashboard" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('dashboard')">Dashboard</button>
+                    <button data-tab="pipeline" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('pipeline')">Pipeline Kanban</button>
+                    <button data-tab="workspace" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('workspace')">AI Workspace</button>
                 </nav>
 
                 <div class="flex items-center gap-2">
-                    <button onclick="toggleTheme()" class="p-2 hover:bg-[var(--border)] rounded-lg transition-smooth" title="Alternar Tema Claro/Escuro">
+                    <button onclick="toggleTheme()" class="p-2 hover:bg-[var(--border)] rounded-lg transition-smooth" title="Alternar Tema">
                         <svg id="theme-icon-sun" class="w-5 h-5 hidden text-[var(--text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M7.757 6.364l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
                         <svg id="theme-icon-moon" class="w-5 h-5 text-[var(--text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                     </button>
                 </div>
             </div>
 
+            <!-- Mobile Nav -->
             <div class="md:hidden px-4 pb-3 flex gap-2 overflow-x-auto">
                 <button data-tab="dashboard" class="tab-btn px-3 py-1 rounded text-xs font-medium whitespace-nowrap" onclick="switchTab('dashboard')">Dashboard</button>
                 <button data-tab="pipeline" class="tab-btn px-3 py-1 rounded text-xs font-medium whitespace-nowrap" onclick="switchTab('pipeline')">Pipeline</button>
@@ -228,6 +239,7 @@
         <main class="flex-1">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+                <!-- DASHBOARD TAB -->
                 <div id="dashboard-tab" class="tab-content">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         <div class="glass rounded-lg p-6 border-l-4 border-indigo-500">
@@ -237,7 +249,6 @@
                             </div>
                             <p class="text-3xl font-bold mb-2" id="kpi-clients">0</p>
                         </div>
-
                         <div class="glass rounded-lg p-6 border-l-4 border-purple-500">
                             <div class="flex items-center justify-between mb-2">
                                 <p class="text-sm font-medium text-[var(--text-muted)]">Gerações Históricas</p>
@@ -245,7 +256,6 @@
                             </div>
                             <p class="text-3xl font-bold mb-2" id="kpi-copies">0</p>
                         </div>
-
                         <div class="glass rounded-lg p-6 border-l-4 border-emerald-500">
                             <div class="flex items-center justify-between mb-2">
                                 <p class="text-sm font-medium text-[var(--text-muted)]">Health Score Operacional</p>
@@ -269,6 +279,7 @@
                     </div>
                 </div>
 
+                <!-- PIPELINE TAB (KANBAN) -->
                 <div id="pipeline-tab" class="tab-content hidden">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-2xl font-bold">Pipeline de Conteúdo</h2>
@@ -281,36 +292,38 @@
                                 <h3 class="font-bold text-sm">💡 Backlog / Briefing</h3>
                                 <span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-0">0</span>
                             </div>
-                            <div id="column-0" class="space-y-3"></div>
+                            <div id="column-0" class="space-y-3 min-h-[300px]"></div>
                         </div>
                         <div class="glass rounded-lg p-4 min-h-[400px]">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="font-bold text-sm">✍️ Em Produção</h3>
                                 <span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-1">0</span>
                             </div>
-                            <div id="column-1" class="space-y-3"></div>
+                            <div id="column-1" class="space-y-3 min-h-[300px]"></div>
                         </div>
                         <div class="glass rounded-lg p-4 min-h-[400px]">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="font-bold text-sm">👀 Validação Interna</h3>
                                 <span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-2">0</span>
                             </div>
-                            <div id="column-2" class="space-y-3"></div>
+                            <div id="column-2" class="space-y-3 min-h-[300px]"></div>
                         </div>
                         <div class="glass rounded-lg p-4 min-h-[400px]">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="font-bold text-sm">✅ Pronto / Agendado</h3>
                                 <span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-3">0</span>
                             </div>
-                            <div id="column-3" class="space-y-3"></div>
+                            <div id="column-3" class="space-y-3 min-h-[300px]"></div>
                         </div>
                     </div>
                 </div>
 
+                <!-- WORKSPACE TAB -->
                 <div id="workspace-tab" class="tab-content hidden">
                     <h2 class="text-2xl font-bold mb-6">AI Copy Engine</h2>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Config -->
                         <div class="glass rounded-lg p-6 space-y-4">
                             <h3 class="font-bold border-b border-[var(--border)] pb-2 mb-4">⚙️ Configuração Estratégica</h3>
                             
@@ -333,6 +346,7 @@
                             </div>
                         </div>
 
+                        <!-- Engine -->
                         <div class="lg:col-span-2 flex flex-col gap-4">
                             <div class="glass rounded-lg p-6">
                                 <label class="block text-xs font-bold uppercase tracking-wider mb-2 text-[var(--text-muted)]">📝 O que deseja criar? (Briefing / Prompt)</label>
@@ -363,8 +377,10 @@
         </main>
     </div>
 
+    <!-- TOAST CONTAINER -->
     <div id="toast-container"></div>
 
+    <!-- ADD CLIENT MODAL -->
     <div id="add-client-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center z-50 p-4">
         <div class="glass rounded-xl p-6 w-full max-w-md bg-[var(--bg-card)]">
             <h3 class="text-lg font-bold mb-4 border-b border-[var(--border)] pb-2">Novo Cliente</h3>
@@ -383,6 +399,7 @@
         </div>
     </div>
 
+    <!-- ADD PIPELINE ITEM MODAL -->
     <div id="add-item-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center z-50 p-4">
         <div class="glass rounded-xl p-6 w-full max-w-md bg-[var(--bg-card)]">
             <h3 class="text-lg font-bold mb-4 border-b border-[var(--border)] pb-2">Nova Demanda</h3>
@@ -412,22 +429,18 @@
         // ============================================
         const brandDatabase = {
             1: {
-                name: "SEOK",
-                displayName: "Agência SEOK",
-                nicho: "Marketing B2B Estratégico, Negócios Premium",
+                name: "SEOK", displayName: "Agência SEOK", nicho: "Marketing B2B Estratégico, Negócios Premium",
                 uvp: "Estratégia orientada a dados e realidade operacional. Audita gargalos comerciais e aplica inteligência de mercado.",
-                icp: "Empresários, fundadores e sócios que faturam +R$ 50-100k/mês. Buscam lucro real acima de vanity metrics.",
+                icp: "Empresários, fundadores e sócios que faturam +R$ 50-100k/mês.",
                 desejos: "Clareza exata do ROI, atração no pico da emoção, filtro de leads qualificados.",
-                dores: "Queimar caixa com anúncios vazios, equipes que entregam apenas o básico, leads curiosos.",
+                dores: "Queimar caixa com anúncios vazios, equipes que entregam apenas o básico.",
                 tom: "Informal, direto, visceral, ancorado em dados.",
-                palavrasChave: "Operação, Bastidores, Padrão de exigência, Gargalos, Diagnóstico",
+                palavrasChave: "Operação, Bastidores, Padrão de exigência, Gargalos",
                 ctas: "Diagnóstico Rápido e Gratuito. Siga para movimentações que movem o ponteiro."
             },
             2: {
-                name: "Content Lab",
-                displayName: "Content Lab",
-                nicho: "Marketing de Influência e Creator Economy B2B",
-                uvp: "Unir marcas e criadores com intencionalidade, fugindo da publicidade engessada (panfletagem).",
+                name: "Content Lab", displayName: "Content Lab", nicho: "Marketing de Influência e Creator Economy B2B",
+                uvp: "Unir marcas e criadores com intencionalidade, fugindo da publicidade engessada.",
                 icp: "Gestores de marketing, CMOs e criadores.",
                 desejos: "Campanhas com conversão real e dark social.",
                 dores: "Gastar verba com panfletagem no feed ou parcerias sem fit real.",
@@ -436,21 +449,17 @@
                 ctas: "A profundidade da análise dos cases atua como isca de autoridade."
             },
             3: {
-                name: "Onnafit",
-                displayName: "Onnafit (Beauty & Health)",
-                nicho: "Equipamentos de Estética Avançada (B2B)",
-                uvp: "Eletroestimulação muscular sistêmica. Hipertrofia passiva, drenagem e recuperação sem impacto articular.",
-                icp: "Donos de clínicas premium. B2B2C: Pós-parto, lipedema, flacidez pós-emagrecimento.",
+                name: "Onnafit", displayName: "Onnafit (Beauty & Health)", nicho: "Equipamentos de Estética Avançada (B2B)",
+                uvp: "Eletroestimulação muscular sistêmica. Hipertrofia passiva, drenagem e recuperação sem impacto.",
+                icp: "Donos de clínicas premium. B2B2C: Pós-parto, lipedema, flacidez.",
                 desejos: "Aumentar LTV, rentabilizar espaço, tratar nichos complexos.",
-                dores: "Pacientes flácidos após remédios, medo do equipamento substituir o trabalho humano.",
+                dores: "Pacientes flácidos após remédios, medo do equipamento substituir o humano.",
                 tom: "Autoridade clínica, sofisticada, elegante e tecnológica.",
                 palavrasChave: "Tratamento Sistêmico, Ativação Muscular Global, Ecossistema 360º",
                 ctas: "Converse com a nossa equipe especializada. Eleve a inteligência clínica."
             },
             4: {
-                name: "Rainbow Kitchen",
-                displayName: "Rainbow Kitchen",
-                nicho: "Nutrição Escolar de Alto Padrão",
+                name: "Rainbow Kitchen", displayName: "Rainbow Kitchen", nicho: "Nutrição Escolar de Alto Padrão",
                 uvp: "Abordagem 'whole foods' e estabilização metabólica para maximizar rendimento pedagógico.",
                 icp: "Diretores escolares e pais de alto poder de compra.",
                 desejos: "Turmas calmas à tarde, mitigação de alergias, transparência.",
@@ -460,9 +469,7 @@
                 ctas: "DM para conversas consultivas B2B com escolas."
             },
             5: {
-                name: "Metapel",
-                displayName: "Metapel (Home Care)",
-                nicho: "Healthtech / Saúde Domiciliar",
+                name: "Metapel", displayName: "Metapel (Home Care)", nicho: "Healthtech / Saúde Domiciliar",
                 uvp: "Hub que conecta profissionais diretamente a famílias. Autonomia, transparência e previsibilidade financeira.",
                 icp: "Enfermeiros e Técnicos em SP buscando transição/renda.",
                 desejos: "Autonomia de agenda sem plantões fixos.",
@@ -472,9 +479,7 @@
                 ctas: "Baixe o app e crie o seu perfil profissional."
             },
             6: {
-                name: "OutBox",
-                displayName: "OutBox Treinamento",
-                nicho: "Treinamento corporativo (B2B) e Teambuilding",
+                name: "OutBox", displayName: "OutBox Treinamento", nicho: "Treinamento corporativo (B2B) e Teambuilding",
                 uvp: "Metodologias vivenciais. Treinar o sistema/engrenagem, não apenas talentos isolados.",
                 icp: "Líderes, RH e C-levels com equipes fragmentadas.",
                 desejos: "Equipe que joga junta sob pressão, fim do falso sim.",
@@ -484,12 +489,10 @@
                 ctas: "Quer entender como mapeamos na prática? Link na bio."
             },
             7: {
-                name: "Latam Wellness",
-                displayName: "Latam Wellness",
-                nicho: "Bem-estar B2B, Recovery e Spas Premium",
+                name: "Latam Wellness", displayName: "Latam Wellness", nicho: "Bem-estar B2B, Recovery e Spas Premium",
                 uvp: "Longevity Spa: reprogramação biológica através de estímulos precisos baseados em ciência italiana.",
                 icp: "Arquitetos, clínicas e spas. Indivíduos de altíssima exigência.",
-                desejos: "Diferenciação comercial (B2B) e redução de fadiga cognitiva (B2C).",
+                desejos: "Diferenciação comercial (B2B) e redução de fadiga cognitiva.",
                 dores: "Constrangimento logístico e preparos muito longos para relaxamento.",
                 tom: "Sofisticada, elegante, científica e autoritativa.",
                 palavrasChave: "Longevity Spa, Performance, Crioterapia, MADE IN ITALY",
@@ -642,7 +645,9 @@
             document.getElementById('empty-state').classList.toggle('hidden', state.clients.length > 0);
         };
 
-        // CRUD Pipeline
+        // ============================================
+        // PIPELINE & DRAG AND DROP KANBAN
+        // ============================================
         const addPipelineItem = () => {
             const title = document.getElementById('item-title').value;
             const clientId = parseInt(document.getElementById('item-client').value);
@@ -660,27 +665,62 @@
         };
         const delItem = (id) => { state.pipelineItems = state.pipelineItems.filter(i => i.id !== id); saveState(); renderPipeline(); };
 
+        let sortableInstances = [];
+
         const renderPipeline = () => {
-            for(let i=0; i<4; i++) { document.getElementById(`column-${i}`).innerHTML = ''; document.getElementById(`count-${i}`).textContent = '0'; }
+            // Limpa as colunas
+            for(let i=0; i<4; i++) { 
+                document.getElementById(`column-${i}`).innerHTML = ''; 
+                document.getElementById(`count-${i}`).textContent = '0'; 
+            }
             
+            // Popula os cards
             state.pipelineItems.forEach(item => {
                 const col = document.getElementById(`column-${item.stage}`);
                 const count = document.getElementById(`count-${item.stage}`);
                 const cName = state.clients.find(c => c.id === item.clientId)?.name || 'Cliente';
                 
                 count.textContent = parseInt(count.textContent) + 1;
+                
+                // DATA-ID no card para o Sortable identificar
                 col.innerHTML += `
-                    <div class="kanban-card group relative">
-                        <button onclick="delItem(${item.id})" class="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100 text-xs">✕</button>
-                        <p class="font-bold text-sm mb-1 pr-4">${item.title}</p>
-                        <p class="text-[10px] text-[var(--primary)] uppercase tracking-wider mb-3 font-bold">${cName}</p>
-                        <div class="flex gap-1">
-                            ${item.stage > 0 ? `<button onclick="moveItem(${item.id}, ${item.stage-1})" class="flex-1 text-[10px] bg-[var(--border)] py-1 rounded">←</button>` : ''}
-                            ${item.stage < 3 ? `<button onclick="moveItem(${item.id}, ${item.stage+1})" class="flex-1 text-[10px] bg-[var(--primary)] text-white py-1 rounded">Avançar →</button>` : ''}
+                    <div class="kanban-card group relative" data-id="${item.id}">
+                        <button onclick="delItem(${item.id})" class="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100 text-xs z-10">✕</button>
+                        <p class="font-bold text-sm mb-1 pr-4 pointer-events-none">${item.title}</p>
+                        <p class="text-[10px] text-[var(--primary)] uppercase tracking-wider mb-3 font-bold pointer-events-none">${cName}</p>
+                        <div class="flex gap-1 z-10 relative">
+                            ${item.stage > 0 ? `<button onclick="moveItem(${item.id}, ${item.stage-1})" class="flex-1 text-[10px] bg-[var(--border)] hover:bg-[var(--primary)] hover:text-white transition-smooth py-1 rounded">←</button>` : ''}
+                            ${item.stage < 3 ? `<button onclick="moveItem(${item.id}, ${item.stage+1})" class="flex-1 text-[10px] bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)] transition-smooth py-1 rounded">Avançar →</button>` : ''}
                         </div>
                     </div>
                 `;
             });
+
+            // Inicializar / Re-inicializar Sortable JS
+            sortableInstances.forEach(instance => instance.destroy());
+            sortableInstances = [];
+
+            for(let i=0; i<4; i++) {
+                const columnEl = document.getElementById(`column-${i}`);
+                const instance = new Sortable(columnEl, {
+                    group: 'kanban', // Permite arrastar entre colunas
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    onEnd: function (evt) {
+                        const itemEl = evt.item;
+                        const itemId = parseInt(itemEl.getAttribute('data-id'));
+                        const newStageId = parseInt(evt.to.id.replace('column-', ''));
+                        
+                        const stateItem = state.pipelineItems.find(x => x.id === itemId);
+                        if(stateItem && stateItem.stage !== newStageId) {
+                            stateItem.stage = newStageId;
+                            saveState();
+                            renderPipeline(); // Re-renderiza para atualizar os botões e contadores
+                        }
+                    }
+                });
+                sortableInstances.push(instance);
+            }
         };
 
         // ============================================
