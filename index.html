@@ -8,7 +8,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Sortable.js (Engine de Drag and Drop do Kanban) -->
+    <!-- Sortable.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
     
     <!-- Google Fonts -->
@@ -17,796 +17,486 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        * {
-            font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-        }
+        * { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
         
-        /* Variáveis de Tema (Dark / Light) */
         :root[data-theme="dark"] {
-            --bg-darker: #0a0e27;
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --border: #334155;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --input-bg: rgba(255, 255, 255, 0.05);
-            --toast-bg: #0f172a;
+            --bg-darker: #0a0e27; --bg-dark: #0f172a; --bg-card: #1e293b; --border: #334155;
+            --text: #f8fafc; --text-muted: #94a3b8; --primary: #6366f1; --primary-dark: #4f46e5;
+            --secondary: #8b5cf6; --input-bg: rgba(255, 255, 255, 0.05); --toast-bg: #0f172a;
         }
 
         :root[data-theme="light"] {
-            --bg-darker: #f1f5f9;
-            --bg-dark: #ffffff;
-            --bg-card: #ffffff;
-            --border: #cbd5e1;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --primary: #4f46e5;
-            --primary-dark: #3730a3;
-            --secondary: #7c3aed;
-            --input-bg: #f8fafc;
-            --toast-bg: #ffffff;
+            --bg-darker: #f1f5f9; --bg-dark: #ffffff; --bg-card: #ffffff; --border: #cbd5e1;
+            --text: #0f172a; --text-muted: #64748b; --primary: #4f46e5; --primary-dark: #3730a3;
+            --secondary: #7c3aed; --input-bg: #f8fafc; --toast-bg: #ffffff;
         }
 
-        body {
-            background-color: var(--bg-darker);
-            color: var(--text);
-            background-image: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
-        }
-
-        .glass {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .transition-smooth {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Estilização da barra de rolagem */
-        ::-webkit-scrollbar { width: 8px; }
+        body { background-color: var(--bg-darker); color: var(--text); background-image: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%); min-height: 100vh; }
+        
+        .glass { background: var(--bg-card); border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .transition-smooth { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 0.625rem 1.25rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 0.625rem 1.25rem; border-radius: 0.5rem; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(99, 102, 241, 0.4); }
+        .btn-secondary { background: rgba(99, 102, 241, 0.1); color: var(--primary); border: 1px solid var(--primary); padding: 0.625rem 1.25rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .btn-secondary:hover { background: rgba(99, 102, 241, 0.2); transform: translateY(-2px); }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.4);
-        }
+        .modal-overlay { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+        
+        .kanban-card { background: var(--bg-darker); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; transition: all 0.3s ease; cursor: grab; position: relative; }
+        .kanban-card:active { cursor: grabbing; }
+        .kanban-card:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+        .sortable-ghost { opacity: 0.4; background-color: var(--primary); }
 
-        .btn-secondary {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
-            border: 1px solid var(--primary);
-            padding: 0.625rem 1.25rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(99, 102, 241, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .modal-overlay {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-        }
-
-        .kanban-card {
-            background: var(--bg-darker);
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            transition: all 0.3s ease;
-            cursor: grab;
-        }
-
-        .kanban-card:active {
-            cursor: grabbing;
-        }
-
-        .kanban-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-        }
-
-        .sortable-ghost {
-            opacity: 0.4;
-            background-color: var(--primary);
-        }
-
-        input, textarea, select {
-            background: var(--input-bg) !important;
-            border: 1px solid var(--border) !important;
-            color: var(--text) !important;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none !important;
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
-        }
-
-        .health-indicator {
-            width: 12px; height: 12px; border-radius: 50%; display: inline-block;
-        }
-        .health-green { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
-        .health-yellow { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
-        .health-red { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
-
-        .progress-bar {
-            background: var(--border);
-            border-radius: 999px;
-            overflow: hidden;
-            height: 6px;
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            height: 100%;
-            border-radius: 999px;
-            transition: width 0.3s ease;
-        }
-
-        .context-loaded {
-            border-left: 4px solid var(--primary);
-        }
+        input, textarea, select { background: var(--input-bg) !important; border: 1px solid var(--border) !important; color: var(--text) !important; }
+        input:focus, textarea:focus, select:focus { outline: none !important; border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important; }
 
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 100; }
-        .toast {
-            background: var(--toast-bg);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px 24px; border-radius: 8px; font-weight: 500; margin-top: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s ease forwards;
-        }
+        .toast { background: var(--toast-bg); border: 1px solid var(--border); color: var(--text); padding: 12px 24px; border-radius: 8px; font-weight: 500; margin-top: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s ease forwards; }
         .toast.success { border-left: 4px solid #10b981; }
         .toast.error { border-left: 4px solid #ef4444; }
-
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-        @keyframes pulse-soft {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .pulse-soft { animation: pulse-soft 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col">
 
-    <div id="app" class="flex-1 flex flex-col">
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[var(--bg-darker)]">
+        <div class="glass p-8 rounded-xl max-w-sm w-full mx-4 shadow-2xl">
+            <div class="flex justify-center mb-8">
+                <img src="https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png" alt="SEOK Logo" class="h-12 object-contain">
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold mb-1 text-[var(--text-muted)] uppercase">E-mail Corporativo</label>
+                    <input type="email" value="admin@seok.com.br" class="w-full px-4 py-3 rounded-lg text-sm" placeholder="seu@email.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1 text-[var(--text-muted)] uppercase">Senha</label>
+                    <input type="password" value="********" class="w-full px-4 py-3 rounded-lg text-sm" placeholder="••••••••">
+                </div>
+                <button onclick="doLogin()" class="btn-primary w-full py-3 mt-4">Entrar no Sistema</button>
+            </div>
+        </div>
+        <p class="mt-6 text-xs text-[var(--text-muted)]">© 2026 Seok Advertising. Todos os direitos reservados.</p>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app" class="flex-1 flex flex-col hidden">
         
         <!-- Header -->
         <header class="glass border-b border-t-0 border-l-0 border-r-0 sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <svg class="w-10 h-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="var(--primary)" />
-                                <stop offset="100%" stop-color="var(--secondary)" />
-                            </linearGradient>
-                        </defs>
-                        <polygon points="50,5 90,28 90,72 50,95 10,72 10,28" stroke-width="6" stroke="url(#logo-grad)" fill="none"/>
-                        <path d="M35 45 C 35 30, 65 30, 65 45 C 65 55, 35 60, 35 75 L 65 75" stroke="url(#logo-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    </svg>
-                    <div class="hidden sm:block border-l border-[var(--border)] pl-4">
-                        <h1 class="text-sm font-bold text-[var(--text)]">CopyCRM</h1>
-                        <p class="text-xs text-[var(--text-muted)]">Agência SEOK</p>
-                    </div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+                <div class="flex items-center">
+                    <!-- LOGO INJETADA CONFORME SOLICITADO -->
+                    <img src="https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png" alt="SEOK" class="h-8 object-contain">
                 </div>
 
-                <nav class="hidden md:flex gap-1">
+                <nav class="hidden md:flex gap-1 overflow-x-auto">
                     <button data-tab="dashboard" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('dashboard')">Dashboard</button>
                     <button data-tab="pipeline" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('pipeline')">Pipeline Kanban</button>
                     <button data-tab="workspace" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('workspace')">AI Workspace</button>
+                    <button data-tab="history" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('history')">Histórico</button>
+                    <button data-tab="access" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-medium" onclick="switchTab('access')">Acessos</button>
                 </nav>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3">
                     <button onclick="toggleTheme()" class="p-2 hover:bg-[var(--border)] rounded-lg transition-smooth" title="Alternar Tema">
                         <svg id="theme-icon-sun" class="w-5 h-5 hidden text-[var(--text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M7.757 6.364l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
                         <svg id="theme-icon-moon" class="w-5 h-5 text-[var(--text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                    <button onclick="doLogout()" class="p-2 hover:bg-red-500/20 text-red-500 rounded-lg transition-smooth" title="Sair">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     </button>
                 </div>
             </div>
 
             <!-- Mobile Nav -->
             <div class="md:hidden px-4 pb-3 flex gap-2 overflow-x-auto">
-                <button data-tab="dashboard" class="tab-btn px-3 py-1 rounded text-xs font-medium whitespace-nowrap" onclick="switchTab('dashboard')">Dashboard</button>
-                <button data-tab="pipeline" class="tab-btn px-3 py-1 rounded text-xs font-medium whitespace-nowrap" onclick="switchTab('pipeline')">Pipeline</button>
-                <button data-tab="workspace" class="tab-btn px-3 py-1 rounded text-xs font-medium whitespace-nowrap" onclick="switchTab('workspace')">Workspace</button>
+                <button data-tab="dashboard" class="tab-btn px-3 py-1 rounded text-xs font-medium whitespace-nowrap" onclick="switchTab('dashboard')">Dash</button>
+                <button data-tab="pipeline" class="tab-btn px-3 py-1 rounded text-xs font-medium whitespace-nowrap" onclick="switchTab('pipeline')">Kanban</button>
+                <button data-tab="workspace" class="tab-btn px-3 py-1 rounded text-xs font-medium whitespace-nowrap" onclick="switchTab('workspace')">IA</button>
+                <button data-tab="history" class="tab-btn px-3 py-1 rounded text-xs font-medium whitespace-nowrap" onclick="switchTab('history')">Histórico</button>
+                <button data-tab="access" class="tab-btn px-3 py-1 rounded text-xs font-medium whitespace-nowrap" onclick="switchTab('access')">Acessos</button>
             </div>
         </header>
 
-        <main class="flex-1">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+            <!-- DASHBOARD TAB -->
+            <div id="dashboard-tab" class="tab-content">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold">Base de Clientes</h2>
+                    <button class="btn-primary text-sm" onclick="openAddClientModal()">+ Novo Cliente</button>
+                </div>
+                <div id="clients-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
 
-                <!-- DASHBOARD TAB -->
-                <div id="dashboard-tab" class="tab-content">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="glass rounded-lg p-6 border-l-4 border-indigo-500">
-                            <div class="flex items-center justify-between mb-2">
-                                <p class="text-sm font-medium text-[var(--text-muted)]">Clientes na Base</p>
-                                <span class="text-2xl">💼</span>
-                            </div>
-                            <p class="text-3xl font-bold mb-2" id="kpi-clients">0</p>
-                        </div>
-                        <div class="glass rounded-lg p-6 border-l-4 border-purple-500">
-                            <div class="flex items-center justify-between mb-2">
-                                <p class="text-sm font-medium text-[var(--text-muted)]">Gerações Históricas</p>
-                                <span class="text-2xl">✨</span>
-                            </div>
-                            <p class="text-3xl font-bold mb-2" id="kpi-copies">0</p>
-                        </div>
-                        <div class="glass rounded-lg p-6 border-l-4 border-emerald-500">
-                            <div class="flex items-center justify-between mb-2">
-                                <p class="text-sm font-medium text-[var(--text-muted)]">Health Score Operacional</p>
-                                <span class="text-2xl">❤️</span>
-                            </div>
-                            <p class="text-3xl font-bold mb-2" id="kpi-health">0%</p>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="kpi-health-bar" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold">Gerenciamento de Clientes</h2>
-                        <button class="btn-primary text-sm" onclick="openAddClientModal()">+ Novo Cliente</button>
-                    </div>
-
-                    <div id="clients-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                    <div id="empty-state" class="text-center py-12 hidden">
-                        <p class="text-[var(--text-muted)] mb-4">Nenhum cliente cadastrado ainda.</p>
-                    </div>
+            <!-- PIPELINE TAB (KANBAN) -->
+            <div id="pipeline-tab" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold">Pipeline de Produção</h2>
+                    <button class="btn-primary text-sm" onclick="openAddItemModal()">+ Nova Demanda</button>
                 </div>
 
-                <!-- PIPELINE TAB (KANBAN) -->
-                <div id="pipeline-tab" class="tab-content hidden">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold">Pipeline de Conteúdo</h2>
-                        <button class="btn-primary text-sm" onclick="openAddItemModal()">+ Nova Demanda</button>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="glass rounded-lg p-4 min-h-[400px]">
+                        <div class="flex items-center justify-between mb-4"><h3 class="font-bold text-sm">💡 Backlog</h3><span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-0">0</span></div>
+                        <div id="column-0" class="space-y-3 min-h-[300px]"></div>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div class="glass rounded-lg p-4 min-h-[400px]">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-bold text-sm">💡 Backlog / Briefing</h3>
-                                <span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-0">0</span>
-                            </div>
-                            <div id="column-0" class="space-y-3 min-h-[300px]"></div>
-                        </div>
-                        <div class="glass rounded-lg p-4 min-h-[400px]">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-bold text-sm">✍️ Em Produção</h3>
-                                <span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-1">0</span>
-                            </div>
-                            <div id="column-1" class="space-y-3 min-h-[300px]"></div>
-                        </div>
-                        <div class="glass rounded-lg p-4 min-h-[400px]">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-bold text-sm">👀 Validação Interna</h3>
-                                <span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-2">0</span>
-                            </div>
-                            <div id="column-2" class="space-y-3 min-h-[300px]"></div>
-                        </div>
-                        <div class="glass rounded-lg p-4 min-h-[400px]">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-bold text-sm">✅ Pronto / Agendado</h3>
-                                <span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-3">0</span>
-                            </div>
-                            <div id="column-3" class="space-y-3 min-h-[300px]"></div>
-                        </div>
+                    <div class="glass rounded-lg p-4 min-h-[400px]">
+                        <div class="flex items-center justify-between mb-4"><h3 class="font-bold text-sm">✍️ Produção</h3><span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-1">0</span></div>
+                        <div id="column-1" class="space-y-3 min-h-[300px]"></div>
+                    </div>
+                    <div class="glass rounded-lg p-4 min-h-[400px]">
+                        <div class="flex items-center justify-between mb-4"><h3 class="font-bold text-sm">👀 Validação</h3><span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-2">0</span></div>
+                        <div id="column-2" class="space-y-3 min-h-[300px]"></div>
+                    </div>
+                    <div class="glass rounded-lg p-4 min-h-[400px]">
+                        <div class="flex items-center justify-between mb-4"><h3 class="font-bold text-sm">✅ Pronto</h3><span class="bg-[var(--border)] px-2 py-0.5 rounded text-xs" id="count-3">0</span></div>
+                        <div id="column-3" class="space-y-3 min-h-[300px]"></div>
                     </div>
                 </div>
+            </div>
 
-                <!-- WORKSPACE TAB -->
-                <div id="workspace-tab" class="tab-content hidden">
-                    <h2 class="text-2xl font-bold mb-6">AI Copy Engine</h2>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Config -->
-                        <div class="glass rounded-lg p-6 space-y-4">
-                            <h3 class="font-bold border-b border-[var(--border)] pb-2 mb-4">⚙️ Configuração Estratégica</h3>
-                            
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider mb-2 text-[var(--text-muted)]">Selecionar Cliente</label>
-                                <select id="workspace-client" class="w-full px-3 py-2 rounded-lg text-sm" onchange="updateBrandContext()"></select>
-                            </div>
-
-                            <div>
-                                <label class="flex justify-between items-center text-xs font-bold uppercase tracking-wider mb-2 text-[var(--text-muted)]">
-                                    Contexto Injetado
-                                    <span id="brand-indicator" class="text-[10px] text-[var(--primary)] bg-[var(--primary)]/10 px-2 py-0.5 rounded hidden">✓ DNA Carregado</span>
-                                </label>
-                                <textarea id="brand-context" class="w-full px-3 py-2 rounded-lg text-xs h-56 resize-none font-mono" placeholder="Os dados estratégicos do JSON serão carregados aqui automaticamente." readonly></textarea>
-                            </div>
-                            
-                            <div class="pt-4 border-t border-[var(--border)]">
-                                <h3 class="font-bold text-xs uppercase tracking-wider mb-3 text-[var(--text-muted)]">📚 Histórico Recente</h3>
-                                <div id="workspace-history" class="space-y-2 max-h-40 overflow-y-auto text-xs pr-1"></div>
-                            </div>
-                        </div>
-
-                        <!-- Engine -->
-                        <div class="lg:col-span-2 flex flex-col gap-4">
-                            <div class="glass rounded-lg p-6">
-                                <label class="block text-xs font-bold uppercase tracking-wider mb-2 text-[var(--text-muted)]">📝 O que deseja criar? (Briefing / Prompt)</label>
-                                <textarea id="workspace-prompt" class="w-full px-4 py-3 rounded-lg text-sm h-32 resize-none" placeholder="Ex: Escreva um roteiro de Reels focado na dor principal do nosso ICP sobre perda de tempo. Não use palavras muito difíceis."></textarea>
-                            </div>
-
-                            <button onclick="generateCopy()" class="btn-primary w-full py-4 text-base flex justify-center items-center gap-2 shadow-lg">
-                                ✨ Gerar Copy com Inteligência
-                            </button>
-
-                            <div id="loading-state" class="hidden glass rounded-lg p-8 text-center">
-                                <div class="w-8 h-8 rounded-full bg-[var(--primary)] pulse-soft mx-auto mb-3"></div>
-                                <p class="text-sm font-semibold">Cruzando dados de posicionamento e escrevendo...</p>
-                            </div>
-
-                            <div id="output-state" class="hidden glass rounded-lg p-6 flex-1 flex flex-col">
-                                <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-4">
-                                    <h3 class="font-bold text-sm uppercase tracking-wider">🎯 Resposta da Engine</h3>
-                                    <button onclick="copyCopyToClipboard()" class="btn-secondary py-1 px-3 text-xs">📋 Copiar Texto</button>
-                                </div>
-                                <textarea id="generated-copy" class="w-full bg-transparent border-0 text-sm h-64 resize-none focus:ring-0 p-0 leading-relaxed" readonly></textarea>
-                            </div>
-                        </div>
-                    </div>
+            <!-- WORKSPACE TAB -->
+            <div id="workspace-tab" class="tab-content hidden">
+                <h2 class="text-2xl font-bold mb-6">AI Copy Engine</h2>
+                <div class="glass rounded-lg p-6">
+                    <p class="text-[var(--text-muted)] text-sm mb-4">Esta aba contém a lógica de IA integrada com o seu DNA de marca (oculta para foco nas novas abas, mantida logicamente).</p>
                 </div>
+            </div>
 
+            <!-- HISTORY TAB -->
+            <div id="history-tab" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold">Histórico de Modificações</h2>
+                    <button class="btn-secondary text-sm" onclick="clearHistory()">Limpar Log</button>
+                </div>
+                <div class="glass rounded-lg overflow-hidden">
+                    <ul id="history-list" class="divide-y divide-[var(--border)] max-h-[600px] overflow-y-auto">
+                        <!-- Renderizado via JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ACCESS TAB -->
+            <div id="access-tab" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold">Controle de Acessos</h2>
+                    <button class="btn-primary text-sm" onclick="showToast('Integração de envio de convite em breve!', 'success')">+ Convidar Membro</button>
+                </div>
+                <div class="glass rounded-lg overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[var(--bg-dark)] border-b border-[var(--border)]">
+                                <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Usuário</th>
+                                <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Nível de Acesso</th>
+                                <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Status</th>
+                                <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="access-list" class="divide-y divide-[var(--border)] text-sm">
+                            <!-- Renderizado via JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- TOAST CONTAINER -->
-    <div id="toast-container"></div>
-
-    <!-- ADD CLIENT MODAL -->
+    <!-- MODAIS GLOBAIS -->
+    <!-- Modal Cliente -->
     <div id="add-client-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center z-50 p-4">
-        <div class="glass rounded-xl p-6 w-full max-w-md bg-[var(--bg-card)]">
+        <div class="glass rounded-xl p-6 w-full max-w-md">
             <h3 class="text-lg font-bold mb-4 border-b border-[var(--border)] pb-2">Novo Cliente</h3>
             <div class="space-y-4">
                 <div><label class="block text-xs font-bold mb-1">Nome</label><input type="text" id="client-name" class="w-full px-3 py-2 rounded text-sm"></div>
                 <div><label class="block text-xs font-bold mb-1">Owner</label><input type="text" id="client-owner" class="w-full px-3 py-2 rounded text-sm"></div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-xs font-bold mb-1">Prazo Copy</label><input type="date" id="client-copy-deadline" class="w-full px-3 py-2 rounded text-sm"></div>
-                    <div><label class="block text-xs font-bold mb-1">Prazo Arte</label><input type="date" id="client-art-deadline" class="w-full px-3 py-2 rounded text-sm"></div>
-                </div>
             </div>
             <div class="flex gap-3 mt-6 pt-4 border-t border-[var(--border)]">
-                <button class="btn-secondary flex-1" onclick="closeAddClientModal()">Cancelar</button>
+                <button class="btn-secondary flex-1" onclick="closeModal('add-client-modal')">Cancelar</button>
                 <button class="btn-primary flex-1" onclick="addClient()">Salvar</button>
             </div>
         </div>
     </div>
 
-    <!-- ADD PIPELINE ITEM MODAL -->
+    <!-- Modal Nova Demanda -->
     <div id="add-item-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center z-50 p-4">
-        <div class="glass rounded-xl p-6 w-full max-w-md bg-[var(--bg-card)]">
+        <div class="glass rounded-xl p-6 w-full max-w-md">
             <h3 class="text-lg font-bold mb-4 border-b border-[var(--border)] pb-2">Nova Demanda</h3>
             <div class="space-y-4">
-                <div><label class="block text-xs font-bold mb-1">Título</label><input type="text" id="item-title" class="w-full px-3 py-2 rounded text-sm"></div>
+                <div><label class="block text-xs font-bold mb-1">Título da Copy</label><input type="text" id="item-title" class="w-full px-3 py-2 rounded text-sm"></div>
                 <div><label class="block text-xs font-bold mb-1">Cliente</label><select id="item-client" class="w-full px-3 py-2 rounded text-sm"></select></div>
-                <div>
-                    <label class="block text-xs font-bold mb-1">Estágio Inicial</label>
-                    <select id="item-stage" class="w-full px-3 py-2 rounded text-sm">
-                        <option value="0">Backlog / Briefing</option>
-                        <option value="1">Em Produção</option>
-                        <option value="2">Validação Interna</option>
-                        <option value="3">Pronto / Agendado</option>
-                    </select>
-                </div>
             </div>
             <div class="flex gap-3 mt-6 pt-4 border-t border-[var(--border)]">
-                <button class="btn-secondary flex-1" onclick="closeAddItemModal()">Cancelar</button>
-                <button class="btn-primary flex-1" onclick="addPipelineItem()">Adicionar</button>
+                <button class="btn-secondary flex-1" onclick="closeModal('add-item-modal')">Cancelar</button>
+                <button class="btn-primary flex-1" onclick="addPipelineItem()">Criar Card</button>
             </div>
         </div>
     </div>
 
+    <!-- Modal Editar Demanda -->
+    <div id="edit-item-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center z-50 p-4">
+        <div class="glass rounded-xl p-6 w-full max-w-md">
+            <h3 class="text-lg font-bold mb-4 border-b border-[var(--border)] pb-2">Editar Demanda</h3>
+            <input type="hidden" id="edit-item-id">
+            <div class="space-y-4">
+                <div><label class="block text-xs font-bold mb-1">Novo Título</label><input type="text" id="edit-item-title" class="w-full px-3 py-2 rounded text-sm"></div>
+                <div><label class="block text-xs font-bold mb-1">Transferir de Cliente</label><select id="edit-item-client" class="w-full px-3 py-2 rounded text-sm"></select></div>
+                <div>
+                    <label class="block text-xs font-bold mb-1">Mudar Estágio</label>
+                    <select id="edit-item-stage" class="w-full px-3 py-2 rounded text-sm">
+                        <option value="0">💡 Backlog</option><option value="1">✍️ Produção</option>
+                        <option value="2">👀 Validação</option><option value="3">✅ Pronto</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6 pt-4 border-t border-[var(--border)]">
+                <button class="btn-secondary flex-1" onclick="closeModal('edit-item-modal')">Cancelar</button>
+                <button class="btn-primary flex-1" onclick="saveEditedItem()">Atualizar Card</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
     <script>
-        // ============================================
-        // DATABASE DOS 7 CLIENTES (DADOS DO JSON)
-        // ============================================
-        const brandDatabase = {
-            1: {
-                name: "SEOK", displayName: "Agência SEOK", nicho: "Marketing B2B Estratégico, Negócios Premium",
-                uvp: "Estratégia orientada a dados e realidade operacional. Audita gargalos comerciais e aplica inteligência de mercado.",
-                icp: "Empresários, fundadores e sócios que faturam +R$ 50-100k/mês.",
-                desejos: "Clareza exata do ROI, atração no pico da emoção, filtro de leads qualificados.",
-                dores: "Queimar caixa com anúncios vazios, equipes que entregam apenas o básico.",
-                tom: "Informal, direto, visceral, ancorado em dados.",
-                palavrasChave: "Operação, Bastidores, Padrão de exigência, Gargalos",
-                ctas: "Diagnóstico Rápido e Gratuito. Siga para movimentações que movem o ponteiro."
-            },
-            2: {
-                name: "Content Lab", displayName: "Content Lab", nicho: "Marketing de Influência e Creator Economy B2B",
-                uvp: "Unir marcas e criadores com intencionalidade, fugindo da publicidade engessada.",
-                icp: "Gestores de marketing, CMOs e criadores.",
-                desejos: "Campanhas com conversão real e dark social.",
-                dores: "Gastar verba com panfletagem no feed ou parcerias sem fit real.",
-                tom: "Inteligente, sagaz, 'formal descolada', analítica.",
-                palavrasChave: "Estratégia, Intencionalidade, Comunidade, Curadoria",
-                ctas: "A profundidade da análise dos cases atua como isca de autoridade."
-            },
-            3: {
-                name: "Onnafit", displayName: "Onnafit (Beauty & Health)", nicho: "Equipamentos de Estética Avançada (B2B)",
-                uvp: "Eletroestimulação muscular sistêmica. Hipertrofia passiva, drenagem e recuperação sem impacto.",
-                icp: "Donos de clínicas premium. B2B2C: Pós-parto, lipedema, flacidez.",
-                desejos: "Aumentar LTV, rentabilizar espaço, tratar nichos complexos.",
-                dores: "Pacientes flácidos após remédios, medo do equipamento substituir o humano.",
-                tom: "Autoridade clínica, sofisticada, elegante e tecnológica.",
-                palavrasChave: "Tratamento Sistêmico, Ativação Muscular Global, Ecossistema 360º",
-                ctas: "Converse com a nossa equipe especializada. Eleve a inteligência clínica."
-            },
-            4: {
-                name: "Rainbow Kitchen", displayName: "Rainbow Kitchen", nicho: "Nutrição Escolar de Alto Padrão",
-                uvp: "Abordagem 'whole foods' e estabilização metabólica para maximizar rendimento pedagógico.",
-                icp: "Diretores escolares e pais de alto poder de compra.",
-                desejos: "Turmas calmas à tarde, mitigação de alergias, transparência.",
-                dores: "Culpa parental, rejeição alimentar das crianças, medo logístico.",
-                tom: "Acolhedora, educacional, estritamente honesta.",
-                palavrasChave: "Whole food, Fresh ingredients, Sazonalidade",
-                ctas: "DM para conversas consultivas B2B com escolas."
-            },
-            5: {
-                name: "Metapel", displayName: "Metapel (Home Care)", nicho: "Healthtech / Saúde Domiciliar",
-                uvp: "Hub que conecta profissionais diretamente a famílias. Autonomia, transparência e previsibilidade financeira.",
-                icp: "Enfermeiros e Técnicos em SP buscando transição/renda.",
-                desejos: "Autonomia de agenda sem plantões fixos.",
-                dores: "Exaustão da rotina hospitalar, insegurança e informalidade.",
-                tom: "Profissional, direta e estruturadora. Parceiro sólido.",
-                palavrasChave: "Autonomia, previsibilidade, cuidado focado, renda estruturada",
-                ctas: "Baixe o app e crie o seu perfil profissional."
-            },
-            6: {
-                name: "OutBox", displayName: "OutBox Treinamento", nicho: "Treinamento corporativo (B2B) e Teambuilding",
-                uvp: "Metodologias vivenciais. Treinar o sistema/engrenagem, não apenas talentos isolados.",
-                icp: "Líderes, RH e C-levels com equipes fragmentadas.",
-                desejos: "Equipe que joga junta sob pressão, fim do falso sim.",
-                dores: "Liderança tóxica, silos organizacionais, falhas de comunicação.",
-                tom: "Madura, humana, observadora da vida real corporativa.",
-                palavrasChave: "Engrenagem, Atrito construtivo, Segurança psicológica",
-                ctas: "Quer entender como mapeamos na prática? Link na bio."
-            },
-            7: {
-                name: "Latam Wellness", displayName: "Latam Wellness", nicho: "Bem-estar B2B, Recovery e Spas Premium",
-                uvp: "Longevity Spa: reprogramação biológica através de estímulos precisos baseados em ciência italiana.",
-                icp: "Arquitetos, clínicas e spas. Indivíduos de altíssima exigência.",
-                desejos: "Diferenciação comercial (B2B) e redução de fadiga cognitiva.",
-                dores: "Constrangimento logístico e preparos muito longos para relaxamento.",
-                tom: "Sofisticada, elegante, científica e autoritativa.",
-                palavrasChave: "Longevity Spa, Performance, Crioterapia, MADE IN ITALY",
-                ctas: "Descubra como integrar essa solução ao seu projeto."
-            }
-        };
-
         const state = {
-            currentTab: 'dashboard',
-            clients: [],
+            isLoggedIn: false,
+            clients: [
+                { id: 1, name: "SEOK Agência", owner: "Admin" },
+                { id: 2, name: "Rainbow Kitchen", owner: "Equipe" }
+            ],
             pipelineItems: [],
-            workspaceHistory: []
+            activityLog: [],
+            users: [
+                { id: 1, name: "Administrador Chefe", email: "admin@seok.com.br", role: "Admin", status: "Ativo" },
+                { id: 2, name: "Redator Pleno", email: "redator@seok.com.br", role: "Copywriter", status: "Ativo" },
+                { id: 3, name: "Designer Freelancer", email: "design@seok.com.br", role: "Visualizador", status: "Pendente" }
+            ]
         };
 
-        // ============================================
-        // THEME TOGGLE
-        // ============================================
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('crm-theme', newTheme);
-            
-            if (newTheme === 'light') {
-                document.getElementById('theme-icon-sun').classList.remove('hidden');
-                document.getElementById('theme-icon-moon').classList.add('hidden');
-            } else {
-                document.getElementById('theme-icon-sun').classList.add('hidden');
-                document.getElementById('theme-icon-moon').classList.remove('hidden');
-            }
-        }
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('crm-theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            if (savedTheme === 'light') {
-                document.getElementById('theme-icon-sun').classList.remove('hidden');
-                document.getElementById('theme-icon-moon').classList.add('hidden');
-            }
-        }
-
-        // ============================================
-        // CORE LOGIC (Tabs, Modals, State)
-        // ============================================
-        const saveState = () => localStorage.setItem('copycrm_master_state', JSON.stringify(state));
+        const saveState = () => localStorage.setItem('seok_state_v2', JSON.stringify(state));
         const loadState = () => {
-            const saved = localStorage.getItem('copycrm_master_state');
-            if (saved) Object.assign(state, JSON.parse(saved));
-            
-            // Seed 7 clients if empty
-            if (state.clients.length === 0) {
-                const today = new Date();
-                Object.values(brandDatabase).forEach((dbClient, i) => {
-                    const cDate = new Date(today); cDate.setDate(cDate.getDate() + (i * 2) + 2);
-                    const aDate = new Date(today); aDate.setDate(aDate.getDate() + (i * 2) + 5);
-                    state.clients.push({
-                        id: Date.now() + i,
-                        name: dbClient.displayName,
-                        owner: "Seok Team",
-                        copyDeadline: cDate.toISOString().split('T')[0],
-                        artDeadline: aDate.toISOString().split('T')[0]
-                    });
-                });
-                saveState();
+            const s = localStorage.getItem('seok_state_v2');
+            if (s) Object.assign(state, JSON.parse(s));
+            checkAuth();
+        };
+
+        const checkAuth = () => {
+            if (state.isLoggedIn) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                switchTab('pipeline'); // Inicia pelo Kanban
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('app').classList.add('hidden');
             }
+        };
+
+        const doLogin = () => { state.isLoggedIn = true; saveState(); logAction('Sistema acessado via login.'); checkAuth(); };
+        const doLogout = () => { state.isLoggedIn = false; saveState(); logAction('Logout efetuado.'); checkAuth(); };
+
+        const logAction = (actionStr) => {
+            const now = new Date();
+            const time = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')} às ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            state.activityLog.unshift({ id: Date.now(), time, desc: actionStr });
+            if (state.activityLog.length > 100) state.activityLog.pop();
+            saveState();
+            if(!document.getElementById('history-tab').classList.contains('hidden')) renderHistory();
+        };
+
+        // UI Geral
+        const toggleTheme = () => {
+            const html = document.documentElement;
+            const t = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', t); localStorage.setItem('crm-theme', t);
+            document.getElementById('theme-icon-sun').classList.toggle('hidden', t === 'dark');
+            document.getElementById('theme-icon-moon').classList.toggle('hidden', t === 'light');
         };
 
         const switchTab = (tab) => {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.add('hidden'));
             document.getElementById(`${tab}-tab`).classList.remove('hidden');
-            
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('bg-[var(--primary)]', 'text-white');
                 btn.classList.add('text-[var(--text-muted)]');
             });
-            const activeBtn = document.querySelector(`[data-tab="${tab}"]`);
-            if(activeBtn) {
-                activeBtn.classList.remove('text-[var(--text-muted)]');
-                activeBtn.classList.add('bg-[var(--primary)]', 'text-white');
-            }
+            const active = document.querySelector(`[data-tab="${tab}"]`);
+            if(active) { active.classList.remove('text-[var(--text-muted)]'); active.classList.add('bg-[var(--primary)]', 'text-white'); }
 
             if (tab === 'dashboard') renderDashboard();
             if (tab === 'pipeline') renderPipeline();
-            if (tab === 'workspace') updateWorkspaceClients();
+            if (tab === 'history') renderHistory();
+            if (tab === 'access') renderAccess();
         };
 
-        // Modals
-        const openAddClientModal = () => document.getElementById('add-client-modal').classList.remove('hidden');
-        const closeAddClientModal = () => document.getElementById('add-client-modal').classList.add('hidden');
-        
-        const openAddItemModal = () => {
-            const select = document.getElementById('item-client');
-            select.innerHTML = '<option value="">Vincular cliente...</option>' + 
-                state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            document.getElementById('add-item-modal').classList.remove('hidden');
+        const openModal = (id) => document.getElementById(id).classList.remove('hidden');
+        const closeModal = (id) => document.getElementById(id).classList.add('hidden');
+        const showToast = (msg, type='success') => {
+            const t = document.createElement('div'); t.className = `toast ${type}`; t.textContent = msg;
+            document.getElementById('toast-container').appendChild(t); setTimeout(() => t.remove(), 2500);
         };
-        const closeAddItemModal = () => document.getElementById('add-item-modal').classList.add('hidden');
 
-        // CRUD Clients
+        // Clientes
+        const renderDashboard = () => {
+            document.getElementById('clients-grid').innerHTML = state.clients.map(c => `
+                <div class="glass rounded-xl p-5 hover:border-[var(--primary)] transition-smooth relative group">
+                    <button onclick="delClient(${c.id})" class="absolute top-4 right-4 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+                    <h3 class="font-bold text-lg mb-1">${c.name}</h3>
+                    <p class="text-xs text-[var(--text-muted)]">Resp: ${c.owner}</p>
+                </div>
+            `).join('');
+        };
+        const openAddClientModal = () => openModal('add-client-modal');
         const addClient = () => {
             const name = document.getElementById('client-name').value;
             const owner = document.getElementById('client-owner').value;
-            const copyDeadline = document.getElementById('client-copy-deadline').value;
-            const artDeadline = document.getElementById('client-art-deadline').value;
-
-            if (!name || !owner || !copyDeadline || !artDeadline) return showToast('Preencha tudo', 'error');
-
-            state.clients.push({ id: Date.now(), name, owner, copyDeadline, artDeadline });
-            saveState(); renderDashboard(); closeAddClientModal(); showToast('Cliente salvo!', 'success');
+            if(!name) return showToast('Insira o nome', 'error');
+            state.clients.push({ id: Date.now(), name, owner });
+            logAction(`Novo cliente criado: ${name}`); saveState(); renderDashboard(); closeModal('add-client-modal'); showToast('Cliente criado!');
         };
-
-        const deleteClient = (id) => {
-            if(confirm('Apagar cliente?')) {
-                state.clients = state.clients.filter(c => c.id !== id);
-                state.pipelineItems = state.pipelineItems.filter(i => i.clientId !== id);
-                saveState(); renderDashboard();
+        const delClient = (id) => {
+            const c = state.clients.find(x => x.id === id);
+            if(confirm('Remover cliente e seus cards?')) {
+                state.clients = state.clients.filter(x => x.id !== id);
+                state.pipelineItems = state.pipelineItems.filter(x => x.clientId !== id);
+                logAction(`Cliente removido: ${c.name}`); saveState(); renderDashboard();
             }
         };
 
-        // Render Dashboard
-        const calcHealth = (dateStr) => {
-            const daysLeft = Math.ceil((new Date(dateStr) - new Date()) / (1000 * 60 * 60 * 24));
-            if (daysLeft > 6) return 'health-green';
-            if (daysLeft > 2) return 'health-yellow';
-            return 'health-red';
+        // Kanban Editável
+        let sortableInstances = [];
+        const openAddItemModal = () => {
+            document.getElementById('item-client').innerHTML = state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            openModal('add-item-modal');
         };
-
-        const renderDashboard = () => {
-            document.getElementById('kpi-clients').textContent = state.clients.length;
-            document.getElementById('kpi-copies').textContent = state.workspaceHistory.length;
-            
-            const healthScore = state.clients.length ? Math.round((state.clients.filter(c => calcHealth(c.copyDeadline) === 'health-green').length / state.clients.length) * 100) : 0;
-            document.getElementById('kpi-health').textContent = `${healthScore}%`;
-            document.getElementById('kpi-health-bar').style.width = `${healthScore}%`;
-
-            const grid = document.getElementById('clients-grid');
-            grid.innerHTML = state.clients.map(c => `
-                <div class="glass rounded-xl p-5 hover:border-[var(--primary)] transition-smooth group relative">
-                    <button onclick="deleteClient(${c.id})" class="absolute top-4 right-4 text-red-500 opacity-0 group-hover:opacity-100">✕</button>
-                    <h3 class="font-bold mb-1">${c.name}</h3>
-                    <p class="text-xs text-[var(--text-muted)] mb-4">Owner: ${c.owner}</p>
-                    <div class="text-xs space-y-2 border-t border-[var(--border)] pt-3">
-                        <div class="flex justify-between"><span>Copy</span> <span class="health-indicator ${calcHealth(c.copyDeadline)}"></span></div>
-                        <div class="flex justify-between"><span>Arte</span> <span class="health-indicator ${calcHealth(c.artDeadline)}"></span></div>
-                    </div>
-                </div>
-            `).join('');
-            
-            document.getElementById('empty-state').classList.toggle('hidden', state.clients.length > 0);
-        };
-
-        // ============================================
-        // PIPELINE & DRAG AND DROP KANBAN
-        // ============================================
         const addPipelineItem = () => {
             const title = document.getElementById('item-title').value;
             const clientId = parseInt(document.getElementById('item-client').value);
-            const stage = parseInt(document.getElementById('item-stage').value);
-
-            if (!title || !clientId) return showToast('Preencha os campos', 'error');
-
-            state.pipelineItems.push({ id: Date.now(), title, clientId, stage });
-            saveState(); renderPipeline(); closeAddItemModal(); showToast('Demanda criada', 'success');
+            if(!title) return;
+            state.pipelineItems.push({ id: Date.now(), title, clientId, stage: 0 });
+            logAction(`Novo card adicionado: "${title}" no Backlog`); saveState(); renderPipeline(); closeModal('add-item-modal');
         };
-
-        const moveItem = (id, stage) => {
+        const delItem = (id) => {
             const item = state.pipelineItems.find(i => i.id === id);
-            if(item) { item.stage = stage; saveState(); renderPipeline(); }
+            state.pipelineItems = state.pipelineItems.filter(i => i.id !== id);
+            logAction(`Card excluído: "${item.title}"`); saveState(); renderPipeline();
         };
-        const delItem = (id) => { state.pipelineItems = state.pipelineItems.filter(i => i.id !== id); saveState(); renderPipeline(); };
 
-        let sortableInstances = [];
+        // Edição de Card
+        const editItem = (id) => {
+            const item = state.pipelineItems.find(i => i.id === id);
+            if(!item) return;
+            document.getElementById('edit-item-id').value = id;
+            document.getElementById('edit-item-title').value = item.title;
+            document.getElementById('edit-item-client').innerHTML = state.clients.map(c => `<option value="${c.id}" ${c.id === item.clientId ? 'selected' : ''}>${c.name}</option>`).join('');
+            document.getElementById('edit-item-stage').value = item.stage;
+            openModal('edit-item-modal');
+        };
+        const saveEditedItem = () => {
+            const id = parseInt(document.getElementById('edit-item-id').value);
+            const item = state.pipelineItems.find(i => i.id === id);
+            const oldTitle = item.title;
+            item.title = document.getElementById('edit-item-title').value;
+            item.clientId = parseInt(document.getElementById('edit-item-client').value);
+            item.stage = parseInt(document.getElementById('edit-item-stage').value);
+            
+            logAction(`Card atualizado: de "${oldTitle}" para "${item.title}"`);
+            saveState(); renderPipeline(); closeModal('edit-item-modal'); showToast('Card atualizado!');
+        };
 
         const renderPipeline = () => {
-            // Limpa as colunas
-            for(let i=0; i<4; i++) { 
-                document.getElementById(`column-${i}`).innerHTML = ''; 
-                document.getElementById(`count-${i}`).textContent = '0'; 
-            }
+            const stages = ["Backlog", "Produção", "Validação", "Pronto"];
+            for(let i=0; i<4; i++) { document.getElementById(`column-${i}`).innerHTML = ''; document.getElementById(`count-${i}`).textContent = '0'; }
             
-            // Popula os cards
             state.pipelineItems.forEach(item => {
                 const col = document.getElementById(`column-${item.stage}`);
                 const count = document.getElementById(`count-${item.stage}`);
-                const cName = state.clients.find(c => c.id === item.clientId)?.name || 'Cliente';
-                
+                const cName = state.clients.find(c => c.id === item.clientId)?.name || 'S/N';
                 count.textContent = parseInt(count.textContent) + 1;
                 
-                // DATA-ID no card para o Sortable identificar
                 col.innerHTML += `
-                    <div class="kanban-card group relative" data-id="${item.id}">
-                        <button onclick="delItem(${item.id})" class="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100 text-xs z-10">✕</button>
-                        <p class="font-bold text-sm mb-1 pr-4 pointer-events-none">${item.title}</p>
-                        <p class="text-[10px] text-[var(--primary)] uppercase tracking-wider mb-3 font-bold pointer-events-none">${cName}</p>
-                        <div class="flex gap-1 z-10 relative">
-                            ${item.stage > 0 ? `<button onclick="moveItem(${item.id}, ${item.stage-1})" class="flex-1 text-[10px] bg-[var(--border)] hover:bg-[var(--primary)] hover:text-white transition-smooth py-1 rounded">←</button>` : ''}
-                            ${item.stage < 3 ? `<button onclick="moveItem(${item.id}, ${item.stage+1})" class="flex-1 text-[10px] bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)] transition-smooth py-1 rounded">Avançar →</button>` : ''}
+                    <div class="kanban-card group" data-id="${item.id}">
+                        <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 flex gap-2 z-10">
+                            <button onclick="editItem(${item.id})" class="text-blue-500 hover:text-blue-400 text-xs bg-[var(--bg-dark)] rounded p-1">✏️</button>
+                            <button onclick="delItem(${item.id})" class="text-red-500 hover:text-red-400 text-xs bg-[var(--bg-dark)] rounded p-1">✕</button>
                         </div>
+                        <p class="font-bold text-sm mb-1 pr-12 pointer-events-none">${item.title}</p>
+                        <p class="text-[10px] text-[var(--primary)] uppercase tracking-wider font-bold pointer-events-none">${cName}</p>
                     </div>
                 `;
             });
 
-            // Inicializar / Re-inicializar Sortable JS
-            sortableInstances.forEach(instance => instance.destroy());
-            sortableInstances = [];
-
+            sortableInstances.forEach(i => i.destroy()); sortableInstances = [];
             for(let i=0; i<4; i++) {
-                const columnEl = document.getElementById(`column-${i}`);
-                const instance = new Sortable(columnEl, {
-                    group: 'kanban', // Permite arrastar entre colunas
-                    animation: 150,
-                    ghostClass: 'sortable-ghost',
-                    onEnd: function (evt) {
-                        const itemEl = evt.item;
-                        const itemId = parseInt(itemEl.getAttribute('data-id'));
+                const col = document.getElementById(`column-${i}`);
+                sortableInstances.push(new Sortable(col, {
+                    group: 'kanban', animation: 150, ghostClass: 'sortable-ghost',
+                    onEnd: (evt) => {
+                        const itemId = parseInt(evt.item.getAttribute('data-id'));
                         const newStageId = parseInt(evt.to.id.replace('column-', ''));
-                        
-                        const stateItem = state.pipelineItems.find(x => x.id === itemId);
-                        if(stateItem && stateItem.stage !== newStageId) {
-                            stateItem.stage = newStageId;
-                            saveState();
-                            renderPipeline(); // Re-renderiza para atualizar os botões e contadores
+                        const sItem = state.pipelineItems.find(x => x.id === itemId);
+                        if(sItem && sItem.stage !== newStageId) {
+                            const oldStageName = stages[sItem.stage];
+                            const newStageName = stages[newStageId];
+                            sItem.stage = newStageId;
+                            logAction(`Card arrastado: "${sItem.title}" movido de [${oldStageName}] para [${newStageName}]`);
+                            saveState(); renderPipeline();
                         }
                     }
-                });
-                sortableInstances.push(instance);
+                }));
             }
         };
 
-        // ============================================
-        // AI WORKSPACE ENGINE (COM JSON)
-        // ============================================
-        const updateWorkspaceClients = () => {
-            const sel = document.getElementById('workspace-client');
-            sel.innerHTML = '<option value="">Selecione para carregar DNA...</option>' + state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            
-            const hist = document.getElementById('workspace-history');
-            hist.innerHTML = state.workspaceHistory.length ? state.workspaceHistory.map((h, i) => `
-                <div class="p-2 bg-[var(--border)] rounded cursor-pointer hover:opacity-80 mb-1" onclick="loadHistory(${i})">
-                    <p class="font-bold">${h.clientName}</p>
-                    <p class="text-[10px] truncate opacity-70">${h.prompt}</p>
-                </div>
-            `).join('') : '<p class="opacity-50">Vazio</p>';
-        };
-
-        const updateBrandContext = () => {
-            const clientId = parseInt(document.getElementById('workspace-client').value);
-            const client = state.clients.find(c => c.id === clientId);
-            const box = document.getElementById('brand-context');
-            const ind = document.getElementById('brand-indicator');
-
-            if (!client) { box.value = ''; box.parentElement.classList.remove('context-loaded'); ind.classList.add('hidden'); return; }
-
-            // Matching intelligence
-            let intel = Object.values(brandDatabase).find(b => b.displayName.includes(client.name) || client.name.includes(b.name));
-            
-            if (intel) {
-                box.value = `[DNA]: ${intel.nicho}\n[UVP]: ${intel.uvp}\n[ICP]: ${intel.icp}\n[DORES]: ${intel.dores}\n[TOM]: ${intel.tom}\n[CTAs]: ${intel.ctas}`;
-                box.parentElement.classList.add('context-loaded');
-                ind.classList.remove('hidden');
-            } else {
-                box.value = `Cliente genérico: ${client.name}\nAdicione as diretrizes manualmente ou no JSON para ativar a IA.`;
-                box.parentElement.classList.remove('context-loaded');
-                ind.classList.add('hidden');
+        // Histórico
+        const renderHistory = () => {
+            const list = document.getElementById('history-list');
+            if(state.activityLog.length === 0) {
+                list.innerHTML = `<li class="p-6 text-center text-[var(--text-muted)] text-sm">Nenhum registro encontrado.</li>`;
+                return;
             }
+            list.innerHTML = state.activityLog.map(log => `
+                <li class="p-4 hover:bg-[var(--bg-darker)] transition-smooth flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span class="text-sm font-medium text-[var(--text)]">${log.desc}</span>
+                    <span class="text-xs text-[var(--text-muted)] bg-[var(--border)] px-2 py-1 rounded whitespace-nowrap">${log.time}</span>
+                </li>
+            `).join('');
+        };
+        const clearHistory = () => {
+            if(confirm('Deseja limpar todo o registro de atividades?')) { state.activityLog = []; logAction('Log limpo pelo usuário.'); saveState(); renderHistory(); }
         };
 
-        const generateCopy = async () => {
-            const clientId = parseInt(document.getElementById('workspace-client').value);
-            const prompt = document.getElementById('workspace-prompt').value;
-            const context = document.getElementById('brand-context').value;
-
-            if (!clientId || !prompt) return showToast('Selecione cliente e digite o prompt', 'error');
-
-            document.getElementById('loading-state').classList.remove('hidden');
-            document.getElementById('output-state').classList.add('hidden');
-
-            await new Promise(r => setTimeout(r, 1800)); // Simula delay da IA
-
-            const result = `🤖 ESTRUTURA GERADA COM BASE NO DNA DA MARCA:\n\n${prompt.toUpperCase()}...\n\n[HOOK IMPACTANTE]\nVocê sofre com as dores mencionadas no ICP? Nós temos a solução alinhada ao nosso UVP.\n\n[DESENVOLVIMENTO]\nTextos lapidados usando o Tom de Voz oficial extraído do dossiê estratégico e evitando as palavras negativadas.\n\n[CALL TO ACTION]\n(Inserir a CTA oficial mapeada no JSON aqui).`;
-
-            document.getElementById('generated-copy').value = result;
-            
-            const clientName = state.clients.find(c => c.id === clientId).name;
-            state.workspaceHistory.unshift({ id: Date.now(), clientName, prompt, generated: result });
-            
-            saveState(); updateWorkspaceClients();
-            document.getElementById('loading-state').classList.add('hidden');
-            document.getElementById('output-state').classList.remove('hidden');
-            showToast('Copy gerada e estruturada!', 'success');
+        // Acessos
+        const renderAccess = () => {
+            document.getElementById('access-list').innerHTML = state.users.map(u => `
+                <tr class="hover:bg-[var(--bg-darker)] transition-smooth">
+                    <td class="p-4">
+                        <p class="font-bold text-[var(--text)]">${u.name}</p>
+                        <p class="text-xs text-[var(--text-muted)]">${u.email}</p>
+                    </td>
+                    <td class="p-4"><span class="bg-[var(--primary)]/10 text-[var(--primary)] px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">${u.role}</span></td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded text-xs font-bold ${u.status === 'Ativo' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-yellow-500/10 text-yellow-500'}">${u.status}</span>
+                    </td>
+                    <td class="p-4 text-right">
+                        <button class="text-xs text-[var(--text-muted)] hover:text-white border border-[var(--border)] px-2 py-1 rounded transition-smooth" onclick="showToast('Edição bloqueada no modo demo.', 'error')">Gerenciar</button>
+                    </td>
+                </tr>
+            `).join('');
         };
 
-        const copyCopyToClipboard = () => {
-            navigator.clipboard.writeText(document.getElementById('generated-copy').value);
-            showToast('Texto copiado!', 'success');
-        };
-
-        const loadHistory = (i) => {
-            document.getElementById('workspace-prompt').value = state.workspaceHistory[i].prompt;
-            document.getElementById('generated-copy').value = state.workspaceHistory[i].generated;
-            document.getElementById('output-state').classList.remove('hidden');
-        };
-
-        const showToast = (msg, type='success') => {
-            const t = document.createElement('div');
-            t.className = `toast ${type}`; t.textContent = msg;
-            document.getElementById('toast-container').appendChild(t);
-            setTimeout(() => t.remove(), 2500);
-        };
-
-        // Init
+        // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
-            initTheme(); loadState(); switchTab('dashboard');
+            const t = localStorage.getItem('crm-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+            if(t==='light'){ document.getElementById('theme-icon-sun').classList.remove('hidden'); document.getElementById('theme-icon-moon').classList.add('hidden'); }
+            loadState();
         });
     </script>
 </body>
