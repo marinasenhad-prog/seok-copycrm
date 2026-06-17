@@ -3,73 +3,1120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEOK - CopyCRM & Cronogramas</title>
+    <title>CopyCRM - Seok Advertising</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
-        .glass { background: #1e293b; border: 1px solid #334155; }
-        input { background: #0f172a !important; border: 1px solid #334155 !important; color: white !important; padding: 4px 8px !important; border-radius: 4px; width: 100px; }
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --bg-dark: #0f172a;
+            --bg-darker: #0a0e27;
+            --border: #1e293b;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-darker) 0%, #1a1f3a 100%);
+            color: var(--text);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .pulse-soft {
+            animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .transition-smooth {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition-smooth;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition-smooth;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1f3a 100%);
+            border: 1px solid var(--border);
+        }
+
+        .kanban-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            cursor: grab;
+            transition-smooth;
+        }
+
+        .kanban-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .kanban-card:active {
+            cursor: grabbing;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+            color: var(--text);
+            z-index: 50;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        input, textarea {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text) !important;
+        }
+
+        input:focus, textarea:focus {
+            outline: none !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+        }
+
+        input::placeholder {
+            color: var(--text-muted) !important;
+        }
+
+        .health-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .health-green {
+            background: var(--success);
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+        }
+
+        .health-yellow {
+            background: var(--warning);
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+        }
+
+        .health-red {
+            background: var(--danger);
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            overflow: hidden;
+            height: 6px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+
+        .logo-container {
+            height: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            max-height: 100%;
+            width: auto;
+            filter: brightness(1.1);
+            transition: filter 0.3s ease;
+        }
+
+        .logo-img:hover {
+            filter: brightness(1.2);
+        }
+
+        /* Brand Context Badge */
+        .brand-badge {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #a5b4fc;
+            margin-top: 0.5rem;
+        }
+
+        /* Context Box Highlight */
+        .context-loaded {
+            border-left: 4px solid var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
     </style>
 </head>
-<body class="p-8">
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
 
-    <div class="max-w-6xl mx-auto">
-        <h1 class="text-3xl font-bold mb-8">Gestão de Cronogramas SEOK</h1>
+    <div id="app" class="min-h-screen flex flex-col">
         
-        <div class="glass rounded-lg overflow-x-auto p-6">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-slate-600">
-                        <th class="p-4">Cliente</th>
-                        <th class="p-4">Copy até</th>
-                        <th class="p-4">Arte até</th>
-                        <th class="p-4">Assunto até</th>
-                    </tr>
-                </thead>
-                <tbody id="deadlines-body"></tbody>
-            </table>
+        <!-- Header -->
+        <header class="glass border-b sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="logo-container">
+                        <img src="https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png" alt="Seok Logo" class="logo-img">
+                    </div>
+                    <div class="hidden sm:block border-l border-slate-600 pl-4">
+                        <h1 class="text-sm font-bold text-slate-300">CopyCRM</h1>
+                        <p class="text-xs text-slate-500">Plataforma de Geração de Copy Inteligente</p>
+                    </div>
+                </div>
+
+                <nav class="hidden md:flex gap-1">
+                    <button data-tab="dashboard" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-500 hover:bg-rgba(99, 102, 241, 0.1)" onclick="switchTab('dashboard')">
+                        Dashboard
+                    </button>
+                    <button data-tab="pipeline" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-500 hover:bg-rgba(99, 102, 241, 0.1)" onclick="switchTab('pipeline')">
+                        Pipeline
+                    </button>
+                    <button data-tab="workspace" class="tab-btn px-4 py-2 rounded-lg transition-smooth text-sm font-500 hover:bg-rgba(99, 102, 241, 0.1)" onclick="switchTab('workspace')">
+                        AI Workspace
+                    </button>
+                </nav>
+
+                <div class="flex items-center gap-2">
+                    <button class="p-2 hover:bg-white/10 rounded-lg transition-smooth" title="Notificações">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                    </button>
+                    <button class="p-2 hover:bg-white/10 rounded-lg transition-smooth" title="Perfil">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="md:hidden px-4 pb-3 flex gap-2 overflow-x-auto">
+                <button data-tab="dashboard" class="tab-btn px-3 py-1 rounded text-xs font-500 whitespace-nowrap" onclick="switchTab('dashboard')">Dashboard</button>
+                <button data-tab="pipeline" class="tab-btn px-3 py-1 rounded text-xs font-500 whitespace-nowrap" onclick="switchTab('pipeline')">Pipeline</button>
+                <button data-tab="workspace" class="tab-btn px-3 py-1 rounded text-xs font-500 whitespace-nowrap" onclick="switchTab('workspace')">AI Workspace</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+                <!-- Dashboard Tab -->
+                <div id="dashboard-tab" class="tab-content">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="glass rounded-lg p-6 border-l-4 border-indigo-500">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-sm font-500 text-slate-400">Clientes Ativos</p>
+                                <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-3xl font-bold mb-2" id="kpi-clients">0</p>
+                            <p class="text-xs text-slate-500">+0 esta semana</p>
+                        </div>
+
+                        <div class="glass rounded-lg p-6 border-l-4 border-purple-500">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-sm font-500 text-slate-400">Cópias este Mês</p>
+                                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-3xl font-bold mb-2" id="kpi-copies">0</p>
+                            <p class="text-xs text-slate-500">+0 hoje</p>
+                        </div>
+
+                        <div class="glass rounded-lg p-6 border-l-4 border-green-500">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-sm font-500 text-slate-400">Health Score</p>
+                                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-3xl font-bold mb-2" id="kpi-health">0%</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="kpi-health-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold">Clientes</h2>
+                        <button class="btn-primary" onclick="openAddClientModal()">
+                            + Novo Cliente
+                        </button>
+                    </div>
+
+                    <div id="clients-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
+
+                    <div id="empty-state" class="text-center py-12">
+                        <svg class="w-16 h-16 mx-auto text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                        </svg>
+                        <p class="text-slate-400 mb-4">Nenhum cliente adicionado ainda</p>
+                        <button class="btn-primary" onclick="openAddClientModal()">Adicionar Primeiro Cliente</button>
+                    </div>
+                </div>
+
+                <!-- Pipeline Tab -->
+                <div id="pipeline-tab" class="tab-content hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold">Pipeline de Projetos</h2>
+                        <button class="btn-primary" onclick="openAddItemModal()">
+                            + Novo Item
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="glass rounded-lg p-4 min-h-96">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-sm">📋 To Define</h3>
+                                <span class="bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded text-xs font-500" id="count-0">0</span>
+                            </div>
+                            <div id="column-0" class="space-y-3">
+                            </div>
+                        </div>
+
+                        <div class="glass rounded-lg p-4 min-h-96">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-sm">⚙️ In Production</h3>
+                                <span class="bg-purple-500/20 text-purple-300 px-2 py-1 rounded text-xs font-500" id="count-1">0</span>
+                            </div>
+                            <div id="column-1" class="space-y-3">
+                            </div>
+                        </div>
+
+                        <div class="glass rounded-lg p-4 min-h-96">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-sm">✨ In Creation</h3>
+                                <span class="bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded text-xs font-500" id="count-2">0</span>
+                            </div>
+                            <div id="column-2" class="space-y-3">
+                            </div>
+                        </div>
+
+                        <div class="glass rounded-lg p-4 min-h-96">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-sm">✅ Ready/Scheduled</h3>
+                                <span class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs font-500" id="count-3">0</span>
+                            </div>
+                            <div id="column-3" class="space-y-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Workspace Tab -->
+                <div id="workspace-tab" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold mb-6">AI Copy Generation</h2>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Left Panel -->
+                        <div class="glass rounded-lg p-6 space-y-4">
+                            <h3 class="font-bold mb-4">⚙️ Setup</h3>
+
+                            <div>
+                                <label class="block text-sm font-500 mb-2">Cliente</label>
+                                <select id="workspace-client" class="w-full px-3 py-2 rounded-lg text-sm" onchange="updateBrandContext()">
+                                    <option value="">Selecione um cliente...</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-500 mb-2">Contexto da Brand
+                                    <span class="brand-badge" id="brand-indicator" style="display:none;">✓ Inteligência Carregada</span>
+                                </label>
+                                <textarea id="brand-context" class="w-full px-3 py-2 rounded-lg text-sm h-40 resize-none" placeholder="Descrição da brand, tom de voz, valores, proposição única..." readonly></textarea>
+                                <p class="text-xs text-slate-500 mt-2">💡 Selecione um cliente para carregar a inteligência estratégica</p>
+                            </div>
+
+                            <div class="border-t border-slate-700"></div>
+
+                            <h3 class="font-bold text-sm">📚 Histórico</h3>
+                            <div id="workspace-history" class="space-y-2 max-h-64 overflow-y-auto text-xs">
+                                <p class="text-slate-500">Nenhuma geração ainda</p>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="glass rounded-lg p-6">
+                                <label class="block text-sm font-500 mb-3">📝 Prompt</label>
+                                <textarea id="workspace-prompt" class="w-full px-3 py-2 rounded-lg text-sm h-40 resize-none" placeholder="Descreva o que você quer que o AI gere com base na inteligência da marca..."></textarea>
+                            </div>
+
+                            <button class="btn-primary w-full" onclick="generateCopy()">
+                                ✨ Gerar Copy com IA
+                            </button>
+
+                            <div id="loading-state" class="hidden">
+                                <div class="glass rounded-lg p-6">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-4 h-4 rounded-full bg-indigo-500 pulse-soft"></div>
+                                        <p class="text-sm font-500">Gerando copy inteligente...</p>
+                                    </div>
+                                    <div class="h-40 bg-slate-700/30 rounded animate-pulse"></div>
+                                </div>
+                            </div>
+
+                            <div id="output-state" class="hidden">
+                                <div class="glass rounded-lg p-6">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="font-bold">Copy Gerada</h3>
+                                        <button class="btn-secondary text-xs" onclick="copyCopyToClipboard()">
+                                            📋 Copiar
+                                        </button>
+                                    </div>
+                                    <textarea id="generated-copy" class="w-full px-3 py-2 rounded-lg text-sm h-40 resize-none" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Add Client Modal -->
+    <div id="add-client-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center z-50 p-4">
+        <div class="modal-content rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Novo Cliente</h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-500 mb-2">Nome da Agência/Cliente</label>
+                    <input type="text" id="client-name" class="w-full px-3 py-2 rounded-lg text-sm" placeholder="Ex: Nike Brasil">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-500 mb-2">Owner</label>
+                    <input type="text" id="client-owner" class="w-full px-3 py-2 rounded-lg text-sm" placeholder="Ex: João Silva">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-500 mb-2">Copy Deadline</label>
+                    <input type="date" id="client-copy-deadline" class="w-full px-3 py-2 rounded-lg text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-500 mb-2">Art Deadline</label>
+                    <input type="date" id="client-art-deadline" class="w-full px-3 py-2 rounded-lg text-sm">
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+                <button class="btn-secondary flex-1" onclick="closeAddClientModal()">Cancelar</button>
+                <button class="btn-primary flex-1" onclick="addClient()">Adicionar</button>
+            </div>
         </div>
     </div>
 
+    <!-- Add Item Modal (Pipeline) -->
+    <div id="add-item-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center z-50 p-4">
+        <div class="modal-content rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Novo Item no Pipeline</h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-500 mb-2">Título</label>
+                    <input type="text" id="item-title" class="w-full px-3 py-2 rounded-lg text-sm" placeholder="Ex: Copy para campanha Instagram">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-500 mb-2">Cliente</label>
+                    <select id="item-client" class="w-full px-3 py-2 rounded-lg text-sm">
+                        <option value="">Selecione um cliente...</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-500 mb-2">Estágio</label>
+                    <select id="item-stage" class="w-full px-3 py-2 rounded-lg text-sm">
+                        <option value="0">To Define</option>
+                        <option value="1">In Production</option>
+                        <option value="2">In Creation</option>
+                        <option value="3">Ready/Scheduled</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+                <button class="btn-secondary flex-1" onclick="closeAddItemModal()">Cancelar</button>
+                <button class="btn-primary flex-1" onclick="addPipelineItem()">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
     <script>
-        // BASE DE DADOS DOS 7 CLIENTES
-        const clients = [
-            { id: 1, name: "Agência SEOK" },
-            { id: 2, name: "Content Lab" },
-            { id: 3, name: "Onnafit" },
-            { id: 4, name: "Rainbow Kitchen" },
-            { id: 5, name: "Metapel" },
-            { id: 6, name: "OutBox" },
-            { id: 7, name: "Latam Wellness" }
-        ];
+     // ===========================================
+// BANCO DE DADOS DE INTELIGÊNCIA (DOSSIÊ SEOK)
+// ===========================================
+const brandDatabase = {
+    "SEOK": {
+        dna: "Marketing B2B Estratégico, Foco em Negócios de Alto Padrão.",
+        uvp: "Estratégia orientada a dados e realidade operacional. Auditoria de gargalos.",
+        tom: "Informal, porém estritamente profissional. Direto, visceral.",
+        ctas: "Diagnóstico gratuito no link da bio; Compartilhe com seu sócio."
+    },
+    "Content Lab": {
+        dna: "Marketing de Influência e Creator Economy B2B.",
+        uvp: "Unir marcas e criadores com intencionalidade estratégica.",
+        tom: "Fluido, maduro, lógico e direto. Visão de negócios.",
+        ctas: "Salvar para referência; Enviar o insight para a equipe."
+    },
+    "Onnafit": {
+        dna: "Tecnologia e Equipamentos de Estética Avançada.",
+        uvp: "Tratamento Sistêmico (Full Body) de eletroestimulação.",
+        tom: "Estratégico, elegante, professoral e empático.",
+        ctas: "Fale com nossos especialistas no link da bio."
+    },
+    "Rainbow Kitchen": {
+        dna: "Nutrição Escolar de Alto Padrão.",
+        uvp: "Abordagem 'whole foods' para maximizar rendimento pedagógico.",
+        tom: "Acolhedor, educacional, transparente e sofisticado.",
+        ctas: "Link na bio para ciência nutricional; DM para consultoria B2B."
+    },
+    "Metapel": {
+        dna: "Healthtech / Saúde Domiciliar (Home Care).",
+        uvp: "Hub tecnológico que conecta profissionais de saúde a famílias.",
+        tom: "Profissional, acolhedora, madura e direta.",
+        ctas: "Baixe o app e crie o perfil; Envie documentos pelo app."
+    },
+    "OutBox": {
+        dna: "Treinamento corporativo, Teambuilding e Liderança.",
+        uvp: "Metodologias vivenciais de atrito construtivo.",
+        tom: "Conversacional, humano, questionador e descolado.",
+        ctas: "Link na bio para conhecer imersões; Chama no link da bio."
+    },
+    "Latam Wellness": {
+        dna: "Bem-estar premium e Longevity Spa.",
+        uvp: "Ecossistemas estruturados de reprogramação biológica.",
+        tom: "Assertivo, refinado, científico e autoritativo.",
+        ctas: "Link da bio para integrar ao seu negócio; Fale com nossa equipe."
+    }
+};
 
-        // CARREGAR DADOS DO LOCALSTORAGE
-        let deadlines = JSON.parse(localStorage.getItem('seok_deadlines')) || 
-                        clients.map(c => ({ id: c.id, copy: '', arte: '', assunto: '' }));
+// ===========================================
+// FUNÇÃO DE ATUALIZAÇÃO DO CONTEXTO NO UI
+// ===========================================
+function updateBrandContext() {
+    const clientSelect = document.getElementById('client-select'); // Certifique-se de que o ID do seu select seja este
+    const contextBox = document.getElementById('brand-context-box'); // ID do div que exibirá o contexto
+    
+    if (!clientSelect || !contextBox) return;
 
-        function renderTable() {
-            const body = document.getElementById('deadlines-body');
-            body.innerHTML = clients.map(client => {
-                const d = deadlines.find(x => x.id === client.id);
+    const brand = brandDatabase[clientSelect.value];
+    
+    if (brand) {
+        contextBox.innerHTML = `
+            <div class="p-4 bg-slate-800 rounded border border-indigo-500/30 text-sm">
+                <h3 class="font-bold text-indigo-400 mb-2">Contexto da Marca: ${clientSelect.value}</h3>
+                <p><strong>UVP:</strong> ${brand.uvp}</p>
+                <p><strong>Tom:</strong> ${brand.tom}</p>
+                <p class="mt-2 text-xs text-slate-400">Status: <span class="text-green-500">Inteligência Carregada</span></p>
+            </div>
+        `;
+    }
+}
+
+// Adicione o listener para atualizar ao mudar o cliente
+document.getElementById('client-select')?.addEventListener('change', updateBrandContext);
+        // ============================================
+        // LOCAL STORAGE
+        // ============================================
+        const saveState = () => {
+            localStorage.setItem('copycrm_state', JSON.stringify(state));
+        };
+
+        const loadState = () => {
+            const saved = localStorage.getItem('copycrm_state');
+            if (saved) {
+                Object.assign(state, JSON.parse(saved));
+            }
+        };
+
+        // ============================================
+        // TAB NAVIGATION
+        // ============================================
+        const switchTab = (tab) => {
+            state.currentTab = tab;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`${tab}-tab`).classList.remove('hidden');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-500/20', 'text-indigo-300');
+            });
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('bg-indigo-500/20', 'text-indigo-300');
+
+            if (tab === 'pipeline') {
+                renderPipeline();
+            } else if (tab === 'workspace') {
+                updateWorkspaceClients();
+            }
+
+            saveState();
+        };
+
+        // ============================================
+        // MODAL FUNCTIONS
+        // ============================================
+        const openAddClientModal = () => {
+            document.getElementById('add-client-modal').classList.remove('hidden');
+        };
+
+        const closeAddClientModal = () => {
+            document.getElementById('add-client-modal').classList.add('hidden');
+            document.getElementById('client-name').value = '';
+            document.getElementById('client-owner').value = '';
+            document.getElementById('client-copy-deadline').value = '';
+            document.getElementById('client-art-deadline').value = '';
+        };
+
+        const openAddItemModal = () => {
+            updateItemClientSelect();
+            document.getElementById('add-item-modal').classList.remove('hidden');
+        };
+
+        const closeAddItemModal = () => {
+            document.getElementById('add-item-modal').classList.add('hidden');
+            document.getElementById('item-title').value = '';
+            document.getElementById('item-client').value = '';
+            document.getElementById('item-stage').value = '0';
+        };
+
+        // ============================================
+        // CLIENT MANAGEMENT
+        // ============================================
+        const addClient = () => {
+            const name = document.getElementById('client-name').value.trim();
+            const owner = document.getElementById('client-owner').value.trim();
+            const copyDeadline = document.getElementById('client-copy-deadline').value;
+            const artDeadline = document.getElementById('client-art-deadline').value;
+
+            if (!name || !owner || !copyDeadline || !artDeadline) {
+                showToast('Preencha todos os campos', 'error');
+                return;
+            }
+
+            state.clients.push({
+                id: Date.now(),
+                name,
+                owner,
+                copyDeadline,
+                artDeadline,
+                createdAt: new Date().toISOString()
+            });
+
+            saveState();
+            renderDashboard();
+            closeAddClientModal();
+            showToast(`Cliente "${name}" adicionado com sucesso!`, 'success');
+        };
+
+        const deleteClient = (id) => {
+            if (confirm('Tem certeza que deseja deletar este cliente?')) {
+                state.clients = state.clients.filter(c => c.id !== id);
+                state.pipelineItems = state.pipelineItems.filter(item => item.clientId !== id);
+                saveState();
+                renderDashboard();
+                showToast('Cliente deletado com sucesso', 'success');
+            }
+        };
+
+        // ============================================
+        // DASHBOARD RENDERING
+        // ============================================
+        const calculateHealthIndicator = (deadline) => {
+            const now = new Date();
+            const dead = new Date(deadline);
+            const daysLeft = Math.ceil((dead - now) / (1000 * 60 * 60 * 24));
+
+            if (daysLeft > 7) return { color: 'health-green', text: '✅ Saudável' };
+            if (daysLeft > 3) return { color: 'health-yellow', text: '⚠️ Atenção' };
+            return { color: 'health-red', text: '🔴 Crítico' };
+        };
+
+        const renderDashboard = () => {
+            document.getElementById('kpi-clients').textContent = state.clients.length;
+            document.getElementById('kpi-copies').textContent = state.workspaceHistory.length;
+
+            const healthScore = state.clients.length > 0 
+                ? Math.round((state.clients.filter(c => calculateHealthIndicator(c.copyDeadline).color === 'health-green').length / state.clients.length) * 100)
+                : 0;
+
+            document.getElementById('kpi-health').textContent = `${healthScore}%`;
+            document.getElementById('kpi-health-bar').style.width = `${healthScore}%`;
+
+            const grid = document.getElementById('clients-grid');
+            const empty = document.getElementById('empty-state');
+
+            if (state.clients.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            grid.innerHTML = state.clients.map(client => {
+                const copyHealth = calculateHealthIndicator(client.copyDeadline);
+                const artHealth = calculateHealthIndicator(client.artDeadline);
+
                 return `
-                    <tr class="border-b border-slate-700">
-                        <td class="p-4 font-bold text-indigo-400">${client.name}</td>
-                        <td class="p-4"><input type="text" value="${d.copy}" onchange="save(${client.id}, 'copy', this.value)"></td>
-                        <td class="p-4"><input type="text" value="${d.arte}" onchange="save(${client.id}, 'arte', this.value)"></td>
-                        <td class="p-4"><input type="text" value="${d.assunto}" onchange="save(${client.id}, 'assunto', this.value)"></td>
-                    </tr>
+                    <div class="glass rounded-lg p-6 hover:border-indigo-500 transition-smooth cursor-pointer group">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-lg group-hover:text-indigo-300 transition-smooth">${client.name}</h3>
+                                <p class="text-sm text-slate-400">Owner: ${client.owner}</p>
+                            </div>
+                            <button onclick="deleteClient(${client.id})" class="p-2 hover:bg-red-500/20 rounded text-red-400 opacity-0 group-hover:opacity-100 transition-smooth">
+                                ✕
+                            </button>
+                        </div>
+
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-slate-400">Copy Deadline</span>
+                                    <span class="health-indicator ${copyHealth.color}"></span>
+                                </div>
+                                <p class="font-500">${new Date(client.copyDeadline).toLocaleDateString('pt-BR')}</p>
+                                <p class="text-xs text-slate-500">${copyHealth.text}</p>
+                            </div>
+
+                            <div class="border-t border-slate-700 pt-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-slate-400">Art Deadline</span>
+                                    <span class="health-indicator ${artHealth.color}"></span>
+                                </div>
+                                <p class="font-500">${new Date(client.artDeadline).toLocaleDateString('pt-BR')}</p>
+                                <p class="text-xs text-slate-500">${artHealth.text}</p>
+                            </div>
+                        </div>
+                    </div>
                 `;
             }).join('');
-        }
+        };
 
-        function save(id, field, value) {
-            const item = deadlines.find(x => x.id === id);
-            item[field] = value;
-            localStorage.setItem('seok_deadlines', JSON.stringify(deadlines));
-            console.log(`Salvo: ${field} para cliente ${id}`);
-        }
+        // ============================================
+        // PIPELINE MANAGEMENT
+        // ============================================
+        const addPipelineItem = () => {
+            const title = document.getElementById('item-title').value.trim();
+            const clientId = parseInt(document.getElementById('item-client').value);
+            const stage = parseInt(document.getElementById('item-stage').value);
 
-        renderTable();
+            if (!title || !clientId) {
+                showToast('Preencha todos os campos', 'error');
+                return;
+            }
+
+            state.pipelineItems.push({
+                id: Date.now(),
+                title,
+                clientId,
+                stage,
+                createdAt: new Date().toISOString()
+            });
+
+            saveState();
+            renderPipeline();
+            closeAddItemModal();
+            showToast('Item adicionado ao pipeline', 'success');
+        };
+
+        const moveItem = (itemId, newStage) => {
+            const item = state.pipelineItems.find(i => i.id === itemId);
+            if (item) {
+                item.stage = newStage;
+                saveState();
+                renderPipeline();
+                showToast('Item movido com sucesso', 'success');
+            }
+        };
+
+        const deleteItem = (itemId) => {
+            state.pipelineItems = state.pipelineItems.filter(i => i.id !== itemId);
+            saveState();
+            renderPipeline();
+            showToast('Item removido', 'success');
+        };
+
+        const renderPipeline = () => {
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`column-${i}`).innerHTML = '';
+                document.getElementById(`count-${i}`).textContent = '0';
+            }
+
+            const stages = [[], [], [], []];
+            state.pipelineItems.forEach(item => {
+                stages[item.stage].push(item);
+            });
+
+            stages.forEach((items, stageIndex) => {
+                const column = document.getElementById(`column-${stageIndex}`);
+                const count = document.getElementById(`count-${stageIndex}`);
+                count.textContent = items.length;
+
+                column.innerHTML = items.map(item => {
+                    const client = state.clients.find(c => c.id === item.clientId);
+                    const clientName = client ? client.name : 'Cliente desconhecido';
+
+                    return `
+                        <div class="kanban-card group">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-500 text-sm flex-1">${item.title}</h4>
+                                <button onclick="deleteItem(${item.id})" class="p-1 hover:bg-red-500/20 rounded text-red-400 opacity-0 group-hover:opacity-100 transition-smooth">
+                                    ✕
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-3">${clientName}</p>
+                            <div class="flex gap-1">
+                                ${stageIndex < 3 ? `<button onclick="moveItem(${item.id}, ${stageIndex + 1})" class="flex-1 text-xs bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 px-2 py-1 rounded transition-smooth">Avançar →</button>` : ''}
+                                ${stageIndex > 0 ? `<button onclick="moveItem(${item.id}, ${stageIndex - 1})" class="flex-1 text-xs bg-slate-600/20 hover:bg-slate-600/30 text-slate-300 px-2 py-1 rounded transition-smooth">← Voltar</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            });
+        };
+
+        const updateItemClientSelect = () => {
+            const select = document.getElementById('item-client');
+            select.innerHTML = '<option value="">Selecione um cliente...</option>' + 
+                state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        };
+
+        // ============================================
+        // WORKSPACE FUNCTIONS COM INTELIGÊNCIA
+        // ============================================
+        const updateWorkspaceClients = () => {
+            const select = document.getElementById('workspace-client');
+            select.innerHTML = '<option value="">Selecione um cliente...</option>' + 
+                state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            const historyContainer = document.getElementById('workspace-history');
+            if (state.workspaceHistory.length === 0) {
+                historyContainer.innerHTML = '<p class="text-slate-500 text-xs">Nenhuma geração ainda</p>';
+            } else {
+                historyContainer.innerHTML = state.workspaceHistory.map((h, i) => `
+                    <div class="p-2 bg-slate-800/50 rounded cursor-pointer hover:bg-slate-800 transition-smooth" onclick="loadFromHistory(${i})">
+                        <p class="font-500 truncate text-slate-200">${h.clientName}</p>
+                        <p class="text-slate-500 text-xs truncate">${h.prompt.substring(0, 50)}...</p>
+                        <p class="text-slate-600 text-xs mt-1">${new Date(h.timestamp).toLocaleTimeString('pt-BR')}</p>
+                    </div>
+                `).join('');
+            }
+        };
+
+        const updateBrandContext = () => {
+            const clientId = parseInt(document.getElementById('workspace-client').value);
+            const client = state.clients.find(c => c.id === clientId);
+            const contextBox = document.getElementById('brand-context');
+            const indicator = document.getElementById('brand-indicator');
+
+            if (client) {
+                // Procura nos dados de brand conforme o nome do cliente
+                let brandInfo = null;
+                for (let key in brandDatabase) {
+                    if (brandDatabase[key].name.toLowerCase() === client.name.toLowerCase()) {
+                        brandInfo = brandDatabase[key];
+                        break;
+                    }
+                }
+
+                if (brandInfo) {
+                    // Carrega inteligência estratégica real
+                    contextBox.value = `
+🎯 CLIENTE: ${brandInfo.displayName}
+
+📊 NICHO DE MERCADO
+${brandInfo.nicho}
+
+💡 PROPOSTA DE VALOR ÚNICA
+${brandInfo.uvp}
+
+👥 CLIENTE IDEAL (ICP)
+${brandInfo.icp}
+
+💚 DESEJOS PROFUNDOS
+${brandInfo.desejos}
+
+⚠️ DORES PROFUNDAS
+${brandInfo.dores}
+
+🎤 TOM DE VOZ
+${brandInfo.tom}
+
+🔑 PALAVRAS-CHAVE
+${brandInfo.palavrasChave}
+
+📢 CHAMADAS À AÇÃO
+${brandInfo.ctas}
+                    `.trim();
+                    
+                    contextBox.parentElement.classList.add('context-loaded');
+                    indicator.style.display = 'inline-block';
+                    showToast(`Inteligência de ${brandInfo.name} carregada! 🎯`, 'success');
+                } else {
+                    // Fallback: cria contexto básico se não encontrar na base
+                    contextBox.value = `Cliente: ${client.name}
+Owner: ${client.owner}
+Copy Deadline: ${new Date(client.copyDeadline).toLocaleDateString('pt-BR')}
+Art Deadline: ${new Date(client.artDeadline).toLocaleDateString('pt-BR')}
+
+📝 Adicione aqui o contexto da marca, tom de voz, valores, diferencial competitivo...`;
+                    contextBox.parentElement.classList.remove('context-loaded');
+                    indicator.style.display = 'none';
+                }
+            } else {
+                contextBox.value = '';
+                contextBox.parentElement.classList.remove('context-loaded');
+                indicator.style.display = 'none';
+            }
+        };
+
+        const generateCopy = async () => {
+            const clientId = parseInt(document.getElementById('workspace-client').value);
+            const prompt = document.getElementById('workspace-prompt').value.trim();
+            const context = document.getElementById('brand-context').value.trim();
+
+            if (!clientId || !prompt) {
+                showToast('Selecione um cliente e escreva um prompt', 'error');
+                return;
+            }
+
+            const client = state.clients.find(c => c.id === clientId);
+            if (!client) {
+                showToast('Cliente não encontrado', 'error');
+                return;
+            }
+
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('output-state').classList.add('hidden');
+
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Simula geração baseada em contexto real
+            const generatedCopy = `"${prompt.substring(0, 40)}...
+
+🎯 Copy estratégica baseada na inteligência de ${client.name}
+
+[A copy aqui seria gerada com IA real integrado com OpenAI/Gemini usando o contexto carregado da marca acima]
+
+✨ Estrutura:
+• Hook baseado no desejo principal do ICP
+• Validação de dor profunda
+• Posicionamento único da marca
+• Call-to-action estratégico
+
+📊 Esta versão usou como base:
+Nicho: ${context.split('\n')[2]}
+Tom: ${context.split('🎤')[1]?.split('\n')[0] || 'Estratégico'}
+
+Próximo passo: Integre OpenAI/Gemini API para geração automática com este contexto!"`;
+
+            document.getElementById('generated-copy').value = generatedCopy;
+
+            state.workspaceHistory.unshift({
+                id: Date.now(),
+                clientName: client.name,
+                prompt,
+                generatedCopy,
+                timestamp: new Date().toISOString()
+            });
+
+            saveState();
+            updateWorkspaceClients();
+
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('output-state').classList.remove('hidden');
+            showToast('Copy gerada com sucesso!', 'success');
+        };
+
+        const copyCopyToClipboard = () => {
+            const copy = document.getElementById('generated-copy').value;
+            navigator.clipboard.writeText(copy).then(() => {
+                showToast('Copiado para a área de transferência!', 'success');
+            }).catch(() => {
+                showToast('Erro ao copiar', 'error');
+            });
+        };
+
+        const loadFromHistory = (index) => {
+            const item = state.workspaceHistory[index];
+            document.getElementById('workspace-prompt').value = item.prompt;
+            document.getElementById('generated-copy').value = item.generatedCopy;
+            document.getElementById('output-state').classList.remove('hidden');
+            document.getElementById('loading-state').classList.add('hidden');
+            showToast('Carregado do histórico', 'success');
+        };
+
+        // ============================================
+        // TOAST NOTIFICATIONS
+        // ============================================
+        const showToast = (message, type = 'success') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        };
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            switchTab('dashboard');
+            renderDashboard();
+        });
+
+        document.getElementById('client-name')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addClient();
+        });
+
+        document.getElementById('item-title')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addPipelineItem();
+        });
     </script>
+
 </body>
 </html>
