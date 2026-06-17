@@ -42,8 +42,6 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .transition-smooth { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -79,368 +77,7 @@
             transform: translateY(-2px);
         }
 
-        .modal-overlay { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
-        .modal-content {
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1f3a 100%);
-            border: 1px solid var(--border);
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            padding: 1rem 1.5rem;
-            color: var(--text);
-            z-index: 9999;
-            animation: slideIn 0.3s ease-out;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-        @keyframes slideIn {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .toast.success { border-left: 4px solid var(--success); }
-        .toast.error { border-left: 4px solid var(--danger); }
-        .toast.warning { border-left: 4px solid var(--warning); }
-
-        input, textarea, select {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid var(--border) !important;
-            color: var(--text) !important;
-        }
-        
-        /* Ajuste específico para os inputs de data na tabela para não ficarem com fundo estranho */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            cursor: pointer;
-        }
-        
-        input:focus, textarea:focus, select:focus {
-            outline: none !important;
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
-        }
-        select option { background: var(--bg-dark); color: var(--text); }
-
-        .logo-img { max-height: 40px; filter: brightness(1.1); transition: filter 0.3s ease; }
-        .logo-img:hover { filter: brightness(1.3); }
-
-        .tab-btn-modern {
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .tab-btn-modern:hover { color: var(--text); background: rgba(255,255,255,0.02); }
-        .tab-btn-modern.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .table-row-hover:hover { background: rgba(255, 255, 255, 0.02); }
-        
-        .initials-avatar {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 0.875rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
-        }
-    </style>
-</head>
-<body>
-
-    <!-- TELA DE LOGIN -->
-    <div id="login-screen" class="min-h-screen flex flex-col items-center justify-center p-4 relative z-50">
-        <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px]"></div>
-            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px]"></div>
-        </div>
-
-        <div class="glass rounded-2xl p-8 w-full max-w-md shadow-2xl border border-indigo-500/20 relative z-10">
-            <div class="text-center mb-8">
-                <img src="https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png" alt="Seok Logo" class="h-12 mx-auto mb-6">
-                <h2 class="text-2xl font-bold text-white mb-1">Bem-vindo ao CopyCRM</h2>
-                <p class="text-sm text-slate-400">Inteligência Estratégica e Automação de Cópia</p>
-            </div>
-
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">E-mail corporativo</label>
-                    <input type="email" id="login-email" class="w-full px-4 py-3 rounded-lg" placeholder="seu@email.com" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">Senha</label>
-                    <input type="password" id="login-password" class="w-full px-4 py-3 rounded-lg" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="btn-primary w-full py-3 mt-2 text-lg shadow-lg shadow-indigo-500/30">
-                    Acessar Plataforma
-                </button>
-            </form>
-
-            <div class="mt-8 pt-6 border-t border-slate-700/50">
-                <h3 class="text-sm font-semibold text-slate-300 mb-3">Não tem acesso? Solicite abaixo:</h3>
-                <form id="request-access-form" onsubmit="handleRequestAccess(event)" class="flex gap-2">
-                    <input type="email" id="request-email" class="flex-1 px-3 py-2 rounded-lg text-sm" placeholder="Digite seu e-mail" required>
-                    <button type="submit" class="btn-secondary px-4 text-sm py-2">Solicitar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- APLICAÇÃO PRINCIPAL -->
-    <div id="app" class="min-h-screen flex flex-col hidden">
-        
-        <!-- HEADER -->
-        <header class="glass border-b border-slate-700/50 sticky top-0 z-40 flex flex-col">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center justify-between py-4">
-                
-                <div class="flex items-center gap-4">
-                    <img src="https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png" alt="Seok Logo" class="logo-img">
-                    <div class="hidden sm:block border-l border-slate-600 pl-4">
-                        <h1 class="text-base font-bold text-slate-200">CRM de Inteligência Generativa</h1>
-                        <p class="text-xs text-slate-400">Gestão Estratégica & Pipeline de Copy</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-6">
-                    <div class="flex items-center gap-3 pl-6 border-l border-slate-700">
-                        <div class="initials-avatar" id="logged-user-initials">MS</div>
-                        <div class="hidden sm:block">
-                            <p class="text-sm font-bold text-white leading-tight" id="logged-user-name">Marina Senhad</p>
-                            <p class="text-[10px] text-green-400 font-medium" id="logged-user-role">Logada - Admin</p>
-                        </div>
-                        <button onclick="handleLogout()" class="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors ml-2" title="Sair do Sistema">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB MENU -->
-            <div class="bg-slate-900/50 border-t border-slate-800">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto custom-scrollbar">
-                    <button data-tab="dashboard" class="tab-btn-modern active" onclick="switchTab('dashboard')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                        Dashboard
-                    </button>
-                    <button data-tab="pipeline" class="tab-btn-modern" onclick="switchTab('pipeline')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path></svg>
-                        Pipeline
-                    </button>
-                    <button data-tab="workspace" class="tab-btn-modern" onclick="switchTab('workspace')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        AI Workspace
-                    </button>
-                    <button data-tab="acessos" class="tab-btn-modern" onclick="switchTab('acessos')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        Acessos <span id="pending-badge" class="hidden ml-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="flex-1">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-                <!-- TAB: DASHBOARD -->
-                <div id="dashboard-tab" class="tab-content">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="glass rounded-xl p-6 border-l-4 border-indigo-500 hover:scale-[1.02] transition-transform cursor-pointer" onclick="switchTab('pipeline')">
-                            <div class="flex items-center justify-between mb-2">
-                                <p class="text-sm font-medium text-slate-400">Clientes Ativos</p>
-                            </div>
-                            <p class="text-3xl font-bold mb-2 text-white" id="kpi-clients">0</p>
-                        </div>
-                        <div class="glass rounded-xl p-6 border-l-4 border-purple-500 hover:scale-[1.02] transition-transform cursor-pointer" onclick="switchTab('workspace')">
-                            <div class="flex items-center justify-between mb-2">
-                                <p class="text-sm font-medium text-slate-400">Cópias Geradas</p>
-                            </div>
-                            <p class="text-3xl font-bold mb-2 text-white" id="kpi-copies">0</p>
-                        </div>
-                        <div class="glass rounded-xl p-6 border-l-4 border-green-500">
-                            <div class="flex items-center justify-between mb-2">
-                                <p class="text-sm font-medium text-slate-400">Health Score Global</p>
-                            </div>
-                            <p class="text-3xl font-bold mb-3 text-white" id="kpi-health">0%</p>
-                            <div class="w-full bg-slate-700 rounded-full h-1.5"><div class="bg-green-500 h-1.5 rounded-full transition-all" id="kpi-health-bar" style="width: 0%"></div></div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-white">Base de Clientes (Dossiê)</h2>
-                        <button class="btn-primary flex items-center gap-2" onclick="openAddClientModal()">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                            Novo Cliente
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="clients-grid"></div>
-                </div>
-
-                <!-- TAB: PIPELINE -->
-                <div id="pipeline-tab" class="tab-content hidden">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-white">Pipeline de Produção</h2>
-                    </div>
-                    <div class="glass rounded-xl border border-slate-700 overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-800/50 text-xs text-slate-400 font-semibold uppercase tracking-wider">
-                                    <th class="px-6 py-4">Cliente</th>
-                                    <th class="px-6 py-4">Copy até</th>
-                                    <th class="px-6 py-4">Arte até</th>
-                                    <th class="px-6 py-4">Assunto até</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pipeline-table-body" class="text-sm text-slate-300 divide-y divide-slate-700/50">
-                                <!-- Gerado via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- TAB: AI WORKSPACE -->
-                <div id="workspace-tab" class="tab-content hidden">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-white">AI Copy Workspace</h2>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="glass rounded-xl p-6 lg:col-span-1 border border-slate-700">
-                            <h3 class="text-lg font-bold mb-4 text-white">Parâmetros de Geração</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-1">Cliente / Dossiê</label>
-                                    <select id="ai-client" class="w-full px-4 py-2 rounded-lg text-sm" onchange="loadClientContext()"></select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-1">Formato</label>
-                                    <select id="ai-format" class="w-full px-4 py-2 rounded-lg text-sm">
-                                        <option value="Carrossel Instagram">Carrossel Instagram</option>
-                                        <option value="Reels/Tiktok Script">Roteiro Reels/TikTok</option>
-                                        <option value="Post Único">Post Único</option>
-                                        <option value="Legenda Longa">Legenda Longa (Storytelling)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-1">Tema / Objetivo</label>
-                                    <textarea id="ai-theme" rows="3" class="w-full px-4 py-2 rounded-lg text-sm resize-none" placeholder="Ex: Quebrar objeções sobre o preço do serviço, focando em valor e ROI..."></textarea>
-                                </div>
-                                <div class="bg-indigo-900/20 p-4 rounded-lg border border-indigo-500/20">
-                                    <p class="text-xs text-indigo-300 font-medium mb-1">Contexto Injetado (Agent RAG):</p>
-                                    <p id="ai-context-preview" class="text-xs text-slate-400 italic">Selecione um cliente para carregar a inteligência de marca.</p>
-                                </div>
-                                <button onclick="generateCopy()" class="btn-primary w-full py-2.5 flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                    Gerar Cópia (AI)
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="glass rounded-xl flex flex-col lg:col-span-2 border border-slate-700">
-                            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800/30">
-                                <h3 class="font-bold text-white">Resultado Gerado</h3>
-                                <div class="flex gap-2">
-                                    <button class="btn-secondary px-3 py-1.5 text-xs flex items-center gap-1" onclick="copyToClipboard('ai-output')">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8aCom base na imagem que você enviou e no seu pedido, fiz as seguintes alterações no sistema:
-
-1. **Dashboard (Clientes Clicáveis):** Agora, ao clicar no card de um cliente, um modal se abre exibindo o dossiê detalhado da marca (puxando as informações do banco de inteligência, se existirem).
-2. **Novo Pipeline (Tabela de Prazos):** O Kanban foi totalmente removido. No lugar dele, a aba Pipeline agora exibe uma tabela limpa com todos os seus clientes e colunas para **Assunto até**, **Copy até** e **Arte até**. 
-3. **Edição Rápida:** Você pode alterar as datas diretamente na tabela do Pipeline, e o sistema salva automaticamente (auto-save).
-
-Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
-
-```html
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CopyCRM - Seok Advertising</title>
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
-    <style>
-        * { font-family: 'Inter', sans-serif; }
-        
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --bg-dark: #0f172a;
-            --bg-darker: #0a0e27;
-            --border: #1e293b;
-            --text: #e2e8f0;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--bg-darker) 0%, #1a1f3a 100%);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        .glass {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 0.625rem 1.25rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
-            border: 1px solid var(--primary);
-            padding: 0.625rem 1.25rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .btn-secondary:hover {
-            background: rgba(99, 102, 241, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .modal-overlay { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
+        .modal-overlay { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 1000; }
         .modal-content {
             background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1f3a 100%);
             border: 1px solid var(--border);
@@ -477,7 +114,7 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
             border-color: var(--primary) !important;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
         }
-        /* Customizando o input de data para ficar mais escuro */
+        
         input[type="date"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
             opacity: 0.6;
@@ -522,7 +159,6 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
 </head>
 <body>
 
-    <!-- TELA DE LOGIN -->
     <div id="login-screen" class="min-h-screen flex flex-col items-center justify-center p-4 relative z-50">
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px]"></div>
@@ -531,7 +167,7 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
 
         <div class="glass rounded-2xl p-8 w-full max-w-md shadow-2xl border border-indigo-500/20 relative z-10">
             <div class="text-center mb-8">
-                <img src="[https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png](https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png)" alt="Seok Logo" class="h-12 mx-auto mb-6">
+                <img src="https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png" alt="Seok Logo" class="h-12 mx-auto mb-6">
                 <h2 class="text-2xl font-bold text-white mb-1">Bem-vindo ao CopyCRM</h2>
                 <p class="text-sm text-slate-400">Inteligência Estratégica e Automação de Cópia</p>
             </div>
@@ -552,15 +188,12 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
         </div>
     </div>
 
-    <!-- APLICAÇÃO PRINCIPAL -->
     <div id="app" class="min-h-screen flex flex-col hidden">
         
-        <!-- HEADER -->
         <header class="glass border-b border-slate-700/50 sticky top-0 z-40 flex flex-col">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center justify-between py-4">
-                
                 <div class="flex items-center gap-4">
-                    <img src="[https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png](https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png)" alt="Seok Logo" class="logo-img">
+                    <img src="https://seokagency.com.br/wp-content/uploads/2025/02/LOGOSEOK350X100.png" alt="Seok Logo" class="logo-img">
                     <div class="hidden sm:block border-l border-slate-600 pl-4">
                         <h1 class="text-base font-bold text-slate-200">CRM de Inteligência Generativa</h1>
                         <p class="text-xs text-slate-400">Gestão Estratégica & Pipeline de Copy</p>
@@ -581,7 +214,6 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
                 </div>
             </div>
 
-            <!-- TABS -->
             <div class="bg-slate-900/50 border-t border-slate-800">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto custom-scrollbar">
                     <button data-tab="dashboard" class="tab-btn-modern active" onclick="switchTab('dashboard')">
@@ -604,11 +236,9 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="flex-1">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-                <!-- TAB: DASHBOARD -->
                 <div id="dashboard-tab" class="tab-content">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         <div class="glass rounded-xl p-6 border-l-4 border-indigo-500 hover:scale-[1.02] transition-transform cursor-pointer" onclick="switchTab('pipeline')">
@@ -637,11 +267,9 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Novo Cliente
                         </button>
                     </div>
-                    <!-- Cards dos Clientes -->
                     <div id="clients-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
                 </div>
 
-                <!-- TAB: PIPELINE (NOVO FORMATO DE TABELA) -->
                 <div id="pipeline-tab" class="tab-content hidden">
                     <div class="flex items-center justify-between mb-6">
                         <div>
@@ -662,51 +290,60 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
                                     </tr>
                                 </thead>
                                 <tbody id="pipeline-table-body" class="text-sm text-slate-300 divide-y divide-slate-700/50">
-                                    <!-- Preenchido via JS -->
-                                </tbody>
+                                    </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB: AI WORKSPACE -->
                 <div id="workspace-tab" class="tab-content hidden">
                     <h2 class="text-2xl font-bold text-white mb-6">Laboratório de Inteligência (AI Workspace)</h2>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        <div class="lg:col-span-4 glass rounded-xl p-6 flex flex-col h-full">
-                            <div class="mb-5">
-                                <label class="block text-sm font-semibold text-slate-300 mb-2">Selecione o Cliente</label>
-                                <select id="workspace-client" class="w-full px-4 py-3 rounded-lg border-slate-600 focus:border-indigo-500 bg-slate-800/50" onchange="updateBrandContext()"></select>
-                            </div>
-                            <div class="flex-1 flex flex-col mb-6">
-                                <label class="block text-sm font-semibold text-slate-300 mb-2">Dossiê da Marca <span id="brand-indicator" class="hidden text-xs text-indigo-400 ml-2">🧠 Carregado</span></label>
-                                <textarea id="brand-context" class="w-full px-4 py-3 rounded-lg text-sm flex-1 min-h-[300px] resize-none border-slate-600 bg-slate-800/50 text-slate-300" readonly></textarea>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <div class="glass rounded-xl p-6 lg:col-span-1 border border-slate-700">
+                            <h3 class="text-lg font-bold mb-4 text-white">Parâmetros de Geração</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-300 mb-1">Cliente / Dossiê</label>
+                                    <select id="workspace-client" class="w-full px-4 py-2 rounded-lg text-sm" onchange="updateBrandContext()"></select>
+                                </div>
+                                
+                                <div class="bg-indigo-900/20 p-4 rounded-lg border border-indigo-500/20">
+                                    <p class="text-xs text-indigo-300 font-medium mb-1">Contexto Injetado (Agent RAG):</p>
+                                    <textarea id="brand-context" class="w-full bg-transparent text-xs text-slate-400 italic resize-none border-none outline-none h-24" readonly>Selecione um cliente para carregar a inteligência de marca.</textarea>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-300 mb-1">Instrução / Prompt</label>
+                                    <textarea id="workspace-prompt" rows="4" class="w-full px-4 py-2 rounded-lg text-sm resize-none" placeholder="O que você precisa que a IA escreva?"></textarea>
+                                </div>
+
+                                <button onclick="generateCopy()" class="btn-primary w-full py-3 flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    Gerar Cópia (AI)
+                                </button>
                             </div>
                         </div>
-                        <div class="lg:col-span-8 space-y-6 flex flex-col">
-                            <div class="glass rounded-xl p-6 shadow-lg">
-                                <label class="block text-sm font-semibold text-slate-300 mb-3">Instrução para IA (Prompt)</label>
-                                <textarea id="workspace-prompt" class="w-full px-4 py-3 rounded-lg text-sm h-32 resize-none border-slate-600 focus:border-indigo-500 bg-slate-800/50"></textarea>
-                            </div>
-                            <button class="btn-primary w-full py-4 text-lg" onclick="generateCopy()">Gerar Copy Estratégica</button>
-                            
-                            <div id="loading-state" class="hidden glass rounded-xl p-8 text-center">
-                                <div class="w-12 h-12 rounded-full border-4 border-indigo-500/30 border-t-indigo-500 animate-spin mx-auto mb-4"></div>
-                                <p class="text-white">Processando...</p>
+
+                        <div class="glass rounded-xl flex flex-col lg:col-span-2 border border-slate-700 min-h-[400px]">
+                            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800/30">
+                                <h3 class="font-bold text-white">Resultado Gerado</h3>
+                                <button class="btn-secondary px-3 py-1.5 text-xs flex items-center gap-1" onclick="copyCopyToClipboard()">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                    Copiar Tudo
+                                </button>
                             </div>
                             
-                            <div id="output-state" class="hidden flex-1 glass rounded-xl p-6 border border-green-500/30 h-full flex flex-col">
-                                <div class="flex justify-between mb-4">
-                                    <h3 class="font-bold text-green-400">Sucesso</h3>
-                                    <button class="btn-secondary text-xs px-3 py-1.5" onclick="copyCopyToClipboard()">Copiar</button>
-                                </div>
-                                <textarea id="generated-copy" class="w-full px-4 py-3 rounded-lg text-sm flex-1 min-h-[300px] resize-none bg-slate-900/50 border-slate-700 text-slate-200" readonly></textarea>
+                            <div id="loading-state" class="hidden flex-1 flex flex-col items-center justify-center p-8">
+                                <div class="w-12 h-12 rounded-full border-4 border-indigo-500/30 border-t-indigo-500 animate-spin mb-4"></div>
+                                <p class="text-white">Processando com Dossiê Inteligente...</p>
                             </div>
+
+                            <textarea id="generated-copy" class="w-full h-full p-6 bg-transparent text-sm text-slate-200 resize-none outline-none" readonly placeholder="A copy gerada aparecerá aqui..."></textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB: ACESSOS -->
                 <div id="acessos-tab" class="tab-content hidden space-y-6">
                     <div>
                         <h2 class="text-2xl font-bold text-white mb-1">Gerenciamento de Acessos</h2>
@@ -742,7 +379,6 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
                                 </div>
                                 <div class="md:col-span-1">
                                     <button class="btn-primary w-full py-2.5 text-sm flex items-center justify-center gap-2" onclick="grantAccess()">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                         Adicionar
                                     </button>
                                 </div>
@@ -761,7 +397,6 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
                                         <th class="px-6 py-4">Colaborador</th>
                                         <th class="px-6 py-4">E-mail</th>
                                         <th class="px-6 py-4">Função</th>
-                                        <th class="px-6 py-4 text-center">Login Via</th>
                                         <th class="px-6 py-4 text-right">Ações</th>
                                     </tr>
                                 </thead>
@@ -776,20 +411,12 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
         </main>
     </div>
 
-    <!-- Modais Genéricos -->
-    
-    <!-- Modal: Adicionar Cliente -->
-    <div id="add-client-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center z-50 p-4">
+    <div id="add-client-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center p-4">
         <div class="modal-content rounded-xl p-6 w-full max-w-md shadow-2xl">
             <h3 class="text-xl font-bold mb-4 text-white">Adicionar Novo Cliente</h3>
             <div class="space-y-4">
                 <div><label class="block text-sm font-medium mb-1 text-slate-300">Nome da Marca</label><input type="text" id="client-name" class="w-full px-3 py-2 rounded-lg text-sm"></div>
                 <div><label class="block text-sm font-medium mb-1 text-slate-300">Responsável (Owner)</label><input type="text" id="client-owner" class="w-full px-3 py-2 rounded-lg text-sm"></div>
-                <div class="grid grid-cols-3 gap-4">
-                    <div><label class="block text-sm font-medium mb-1 text-slate-300">Assunto até</label><input type="date" id="client-assunto-deadline" class="w-full px-3 py-2 rounded-lg text-sm p-1"></div>
-                    <div><label class="block text-sm font-medium mb-1 text-slate-300">Copy até</label><input type="date" id="client-copy-deadline" class="w-full px-3 py-2 rounded-lg text-sm p-1"></div>
-                    <div><label class="block text-sm font-medium mb-1 text-slate-300">Arte até</label><input type="date" id="client-art-deadline" class="w-full px-3 py-2 rounded-lg text-sm p-1"></div>
-                </div>
             </div>
             <div class="flex gap-3 mt-8">
                 <button class="btn-secondary flex-1" onclick="closeAddClientModal()">Cancelar</button>
@@ -798,35 +425,30 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
         </div>
     </div>
 
-    <!-- Modal: Ver Dossiê do Cliente (Novo) -->
-    <div id="view-client-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center z-50 p-4">
+    <div id="view-client-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center p-4">
         <div class="modal-content rounded-xl p-6 w-full max-w-lg shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
                     <span id="vc-name">Nome do Cliente</span>
                 </h3>
                 <button onclick="closeViewClientModal()" class="text-slate-400 hover:text-white transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             
             <div class="space-y-4 text-sm text-slate-300 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar" id="vc-details">
-                <!-- Injetado via JS -->
-            </div>
+                </div>
             
             <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-700">
-                <button class="btn-primary px-6" onclick="closeViewClientModal()">Fechar</button>
+                <button class="btn-primary px-6 py-2" onclick="closeViewClientModal()">Fechar</button>
             </div>
         </div>
     </div>
 
-    <!-- Container de Notificações -->
     <div id="toast-container"></div>
 
     <script>
-        // ============================================
-        // BANCO DE DADOS DE INTELIGÊNCIA (DOSSIÊ SEOK)
-        // ============================================
+        // Banco de Dados Mockado
         const brandDatabase = {
             "Agência SEOK": { nicho: "Marketing B2B Estratégico", uvp: "Estratégia orientada a dados, foca em conversão.", icp: "Empresários (faturamento R$ 50k+)", desejos: "Clareza do ROI", dores: "Queimar caixa com anúncios", tom: "Direto, analítico.", palavrasChave: "Gargalos, Diagnóstico", ctas: "Diagnóstico gratuito na bio." },
             "Content Lab": { nicho: "Marketing de Influência", uvp: "Unir marcas e criadores com intencionalidade.", icp: "CMOs e Gestores", desejos: "Gerar dark social", dores: "Gastar com panfletagem", tom: "Maduro e sagaz.", palavrasChave: "Comunidade, Intencionalidade", ctas: "Salvar referência." },
@@ -834,34 +456,23 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
             "Rainbow Kitchen": { nicho: "Alimentação Saudável", uvp: "Sabor de verdade com ingredientes limpos.", icp: "Pessoas buscando estilo de vida saudável", desejos: "Comer bem sem culpa", dores: "Comida fit sem gosto", tom: "Alegre e inspirador.", palavrasChave: "Sabor, Nutrição", ctas: "Faça seu pedido." }
         };
 
-        // ============================================
-        // ESTADO GLOBAL DO SISTEMA
-        // ============================================
         const state = {
             isAuthenticated: false,
             currentUser: null,
-            users: [
-                { id: 1, name: "Marina Senhad", email: "marinasenhad@gmail.com", role: "Admin", password: "Gio@2026" }
-            ],
+            users: [],
             pendingRequests: [],
             currentTab: 'dashboard',
             clients: [],
             workspaceHistory: []
         };
 
-        const saveState = () => { localStorage.setItem('copycrm_master_state', JSON.stringify(state)); };
+        const saveState = () => localStorage.setItem('copycrm_master_state', JSON.stringify(state));
 
         const loadState = () => {
             const saved = localStorage.getItem('copycrm_master_state');
             if (saved) {
-                const parsed = JSON.parse(saved);
-                Object.assign(state, parsed);
-                
-                if (!state.users.find(u => u.email === 'marinasenhad@gmail.com')) {
-                    state.users.push({ id: 1, name: "Marina Senhad", email: "marinasenhad@gmail.com", role: "Admin", password: "Gio@2026" });
-                }
+                Object.assign(state, JSON.parse(saved));
             } else {
-                // Popula clientes iniciais baseados na imagem
                 state.clients = [ 
                     { id: 1, name: "Agência SEOK", owner: "Seok Team", assuntoDeadline: "2026-06-20", copyDeadline: "2026-06-25", artDeadline: "2026-06-30" },
                     { id: 2, name: "Content Lab", owner: "Seok Team", assuntoDeadline: "", copyDeadline: "", artDeadline: "" },
@@ -873,24 +484,16 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
                 ];
             }
 
+            // Garante o usuário master sempre na base
             const targetEmail = "marinasenhad@gmail.com";
             if (!state.users.find(u => u.email === targetEmail)) {
-                state.users.push({
-                    id: Date.now(),
-                    name: "Marina Senhad",
-                    email: targetEmail,
-                    role: "Admin",
-                    password: "Gio@2026"
-                });
+                state.users.push({ id: Date.now(), name: "Marina Senhad", email: targetEmail, role: "Admin", password: "Gio@2026" });
             }
 
             saveState();
             checkAuth();
         };
 
-        // ============================================
-        // SISTEMA DE AUTENTICAÇÃO
-        // ============================================
         const checkAuth = () => {
             if (state.isAuthenticated && state.currentUser) {
                 document.getElementById('login-screen').classList.add('hidden');
@@ -911,14 +514,13 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value;
-
             const user = state.users.find(u => u.email === email && u.password === pass);
 
             if (user) {
                 state.isAuthenticated = true;
                 state.currentUser = user;
                 saveState();
-                showToast(`Bem-vinda, ${user.name}!`, 'success');
+                showToast(`Bem-vinda, ${user.name}!`);
                 checkAuth();
             } else {
                 showToast('Credenciais inválidas.', 'error');
@@ -932,9 +534,6 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
             checkAuth();
         };
 
-        // ============================================
-        // UI & NAVEGAÇÃO
-        // ============================================
         const getInitials = (name) => {
             if(!name) return 'U';
             const parts = name.split(' ');
@@ -959,9 +558,7 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
             saveState();
         };
 
-        // ============================================
-        // LÓGICA DO DASHBOARD E CLIENTES
-        // ============================================
+        // UI Dashboard
         const renderDashboard = () => {
             document.getElementById('kpi-clients').textContent = state.clients.length;
             const grid = document.getElementById('clients-grid');
@@ -975,220 +572,119 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
                     <p class="text-xs text-slate-400">Owner: ${c.owner}</p>
                 </div>
             `).join('');
-            
-            document.getElementById('kpi-health').textContent = state.clients.length > 0 ? "92%" : "0%";
-            document.getElementById('kpi-health-bar').style.width = state.clients.length > 0 ? "92%" : "0%";
         };
 
-        // Função para abrir o modal de detalhes do cliente
         const viewClient = (id) => {
             const client = state.clients.find(c => c.id === id);
             if(!client) return;
 
             document.getElementById('vc-name').textContent = client.name;
             const detailsDiv = document.getElementById('vc-details');
-            
-            // Busca no banco de dados fixo, ou mostra vazio se não tiver
             const dossier = brandDatabase[client.name];
 
             if(dossier) {
                 detailsDiv.innerHTML = `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
-                            <span class="block text-xs font-bold text-indigo-400 mb-1">Nicho</span>
-                            <span class="text-white">${dossier.nicho}</span>
-                        </div>
-                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
-                            <span class="block text-xs font-bold text-indigo-400 mb-1">ICP (Público-Alvo)</span>
-                            <span class="text-white">${dossier.icp}</span>
-                        </div>
-                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700 md:col-span-2">
-                            <span class="block text-xs font-bold text-indigo-400 mb-1">UVP (Proposta Única de Valor)</span>
-                            <span class="text-white">${dossier.uvp}</span>
-                        </div>
-                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
-                            <span class="block text-xs font-bold text-red-400 mb-1">Dores Principais</span>
-                            <span class="text-white">${dossier.dores}</span>
-                        </div>
-                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
-                            <span class="block text-xs font-bold text-green-400 mb-1">Desejos Principais</span>
-                            <span class="text-white">${dossier.desejos}</span>
-                        </div>
-                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
-                            <span class="block text-xs font-bold text-indigo-400 mb-1">Tom de Voz</span>
-                            <span class="text-white">${dossier.tom}</span>
-                        </div>
-                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
-                            <span class="block text-xs font-bold text-indigo-400 mb-1">CTA Padrão</span>
-                            <span class="text-white">${dossier.ctas}</span>
-                        </div>
+                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700"><span class="block text-xs font-bold text-indigo-400 mb-1">Nicho</span><span class="text-white">${dossier.nicho}</span></div>
+                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700"><span class="block text-xs font-bold text-indigo-400 mb-1">ICP</span><span class="text-white">${dossier.icp}</span></div>
+                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700 md:col-span-2"><span class="block text-xs font-bold text-indigo-400 mb-1">UVP</span><span class="text-white">${dossier.uvp}</span></div>
+                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700"><span class="block text-xs font-bold text-red-400 mb-1">Dores Principais</span><span class="text-white">${dossier.dores}</span></div>
+                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700"><span class="block text-xs font-bold text-green-400 mb-1">Desejos Principais</span><span class="text-white">${dossier.desejos}</span></div>
                     </div>
                 `;
             } else {
-                detailsDiv.innerHTML = `
-                    <div class="text-center py-8">
-                        <svg class="w-12 h-12 text-slate-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                        <p class="text-slate-400">Dossiê de inteligência ainda não mapeado para esta marca.</p>
-                        <p class="text-xs text-slate-500 mt-1">Owner: ${client.owner}</p>
-                    </div>
-                `;
+                detailsDiv.innerHTML = `<div class="text-center py-8 text-slate-400">Dossiê não mapeado. Owner: ${client.owner}</div>`;
             }
-
             document.getElementById('view-client-modal').classList.remove('hidden');
         };
 
         const closeViewClientModal = () => document.getElementById('view-client-modal').classList.add('hidden');
 
-        // ============================================
-        // LÓGICA DO PIPELINE (NOVA TABELA)
-        // ============================================
+        // UI Pipeline
         const renderPipeline = () => {
             const tbody = document.getElementById('pipeline-table-body');
-            
-            if(state.clients.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">Nenhum cliente cadastrado ainda.</td></tr>`;
-                return;
-            }
-
             tbody.innerHTML = state.clients.map(c => `
                 <tr class="table-row-hover transition-colors">
                     <td class="px-6 py-4 font-bold text-white">${c.name}</td>
-                    <td class="px-6 py-4 text-center">
-                        <input type="date" value="${c.assuntoDeadline || ''}" onchange="updateClientDate(${c.id}, 'assuntoDeadline', this.value)" class="bg-slate-800 border-slate-600 rounded px-3 py-1.5 text-sm text-slate-200 focus:border-indigo-500 w-full max-w-[160px] mx-auto block transition-colors cursor-pointer">
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <input type="date" value="${c.copyDeadline || ''}" onchange="updateClientDate(${c.id}, 'copyDeadline', this.value)" class="bg-slate-800 border-slate-600 rounded px-3 py-1.5 text-sm text-slate-200 focus:border-indigo-500 w-full max-w-[160px] mx-auto block transition-colors cursor-pointer">
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <input type="date" value="${c.artDeadline || ''}" onchange="updateClientDate(${c.id}, 'artDeadline', this.value)" class="bg-slate-800 border-slate-600 rounded px-3 py-1.5 text-sm text-slate-200 focus:border-indigo-500 w-full max-w-[160px] mx-auto block transition-colors cursor-pointer">
-                    </td>
+                    <td class="px-6 py-4 text-center"><input type="date" value="${c.assuntoDeadline || ''}" onchange="updateClientDate(${c.id}, 'assuntoDeadline', this.value)" class="bg-slate-800 border-slate-600 rounded px-3 py-1.5 text-sm text-slate-200"></td>
+                    <td class="px-6 py-4 text-center"><input type="date" value="${c.copyDeadline || ''}" onchange="updateClientDate(${c.id}, 'copyDeadline', this.value)" class="bg-slate-800 border-slate-600 rounded px-3 py-1.5 text-sm text-slate-200"></td>
+                    <td class="px-6 py-4 text-center"><input type="date" value="${c.artDeadline || ''}" onchange="updateClientDate(${c.id}, 'artDeadline', this.value)" class="bg-slate-800 border-slate-600 rounded px-3 py-1.5 text-sm text-slate-200"></td>
                 </tr>
             `).join('');
         };
 
         const updateClientDate = (id, field, value) => {
             const client = state.clients.find(c => c.id === id);
-            if(client) {
-                client[field] = value;
-                saveState();
-                showToast('Prazo atualizado automaticamente!', 'success');
-            }
+            if(client) { client[field] = value; saveState(); showToast('Prazo atualizado!'); }
         };
 
-        // Modais de Criação
-        const openAddClientModal = () => {
-            document.getElementById('client-name').value = '';
-            document.getElementById('client-owner').value = '';
-            document.getElementById('client-assunto-deadline').value = '';
-            document.getElementById('client-copy-deadline').value = '';
-            document.getElementById('client-art-deadline').value = '';
-            document.getElementById('add-client-modal').classList.remove('hidden');
-        }
+        // Modais Cadastro
+        const openAddClientModal = () => document.getElementById('add-client-modal').classList.remove('hidden');
         const closeAddClientModal = () => document.getElementById('add-client-modal').classList.add('hidden');
         
         const addClient = () => {
             const name = document.getElementById('client-name').value.trim();
             const owner = document.getElementById('client-owner').value.trim();
-            const assuntoDeadline = document.getElementById('client-assunto-deadline').value;
-            const copyDeadline = document.getElementById('client-copy-deadline').value;
-            const artDeadline = document.getElementById('client-art-deadline').value;
-            
-            if(!name || !owner) return showToast('Preencha Marca e Owner', 'error');
+            if(!name || !owner) return showToast('Preencha os campos', 'error');
 
-            state.clients.push({ id: Date.now(), name, owner, assuntoDeadline, copyDeadline, artDeadline });
-            saveState();
-            renderDashboard();
-            if(state.currentTab === 'pipeline') renderPipeline();
-            closeAddClientModal();
-            showToast('Cliente adicionado com sucesso!');
+            state.clients.push({ id: Date.now(), name, owner, assuntoDeadline: "", copyDeadline: "", artDeadline: "" });
+            saveState(); renderDashboard(); closeAddClientModal(); showToast('Cliente adicionado!');
         };
 
         const removeClient = (id) => {
-            if(confirm('Tem certeza que deseja remover este cliente?')) {
+            if(confirm('Remover cliente?')) {
                 state.clients = state.clients.filter(c => c.id !== id);
                 saveState(); renderDashboard();
             }
         }
 
-        // ============================================
-        // LÓGICA DO AI WORKSPACE
-        // ============================================
+        // AI Workspace
         const updateWorkspaceClients = () => {
             document.getElementById('workspace-client').innerHTML = '<option value="">Selecione...</option>' + state.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            const totalCopies = state.workspaceHistory ? state.workspaceHistory.length : 0;
-            document.getElementById('kpi-copies').textContent = totalCopies;
+            document.getElementById('kpi-copies').textContent = state.workspaceHistory.length;
         };
 
         const updateBrandContext = () => {
             const selectVal = document.getElementById('workspace-client').options[document.getElementById('workspace-client').selectedIndex].text;
             const contextBox = document.getElementById('brand-context');
-            const indicator = document.getElementById('brand-indicator');
-            
-            if(selectVal && selectVal !== 'Selecione...') {
-                const brandData = brandDatabase[selectVal] || { 
-                    nicho: "Não definido", uvp: "Não definido", icp: "Não definido", 
-                    desejos: "Não definido", dores: "Não definido", tom: "Não definido" 
-                };
-                
-                contextBox.value = `📍 NOME: ${selectVal}\n🎯 NICHO: ${brandData.nicho}\n💡 UVP: ${brandData.uvp}\n👥 ICP: ${brandData.icp}\n❤️ DESEJOS: ${brandData.desejos}\n💔 DORES: ${brandData.dores}\n🗣️ TOM DE VOZ: ${brandData.tom}\n`;
-                indicator.classList.remove('hidden');
+            if(selectVal && selectVal !== 'Selecione...' && brandDatabase[selectVal]) {
+                contextBox.value = `Tom: ${brandDatabase[selectVal].tom} | Dores: ${brandDatabase[selectVal].dores} | Desejos: ${brandDatabase[selectVal].desejos}`;
             } else {
-                contextBox.value = "";
-                indicator.classList.add('hidden');
+                contextBox.value = "Sem dossiê registrado para injetar contexto.";
             }
         };
 
         const generateCopy = () => {
             const prompt = document.getElementById('workspace-prompt').value.trim();
-            const clientSelect = document.getElementById('workspace-client');
-            const clientId = clientSelect.value;
-            
-            if(!clientId) return showToast('Selecione um cliente primeiro!', 'warning');
-            if(!prompt) return showToast('Digite um prompt para a inteligência.', 'warning');
+            if(!prompt) return showToast('Digite um prompt.', 'warning');
 
-            const clientName = clientSelect.options[clientSelect.selectedIndex].text;
-
+            document.getElementById('generated-copy').value = "";
             document.getElementById('loading-state').classList.remove('hidden');
-            document.getElementById('output-state').classList.add('hidden');
 
             setTimeout(() => {
                 document.getElementById('loading-state').classList.add('hidden');
-                document.getElementById('output-state').classList.remove('hidden');
-                
-                document.getElementById('generated-copy').value = `### Resultado Estratégico gerado para ${clientName}\n\nDe acordo com o Dossiê da Marca, a copy utilizou um tom adequado e abordou as dores e desejos primários do ICP.\n\n---\n\n${prompt}\n\n[Aqui o CopyCRM se conectaria futuramente com a API da OpenAI para injetar os textos hiper-segmentados baseados nos dados treinados.]\n\n---\n🎯 Sugestão de CTA embutida.\n📊 Foco de Conversão: Alto.`;
-                
-                if(!state.workspaceHistory) state.workspaceHistory = [];
-                state.workspaceHistory.push({ id: Date.now(), prompt });
+                document.getElementById('generated-copy').value = `### Resultado da IA\n\n${prompt}\n\n[Conexão com LLM necessária para geração real]`;
+                state.workspaceHistory.push({ id: Date.now() });
                 saveState();
-                
-                showToast('Copy gerada com sucesso!', 'success');
-            }, 1500);
+                showToast('Gerado com sucesso!');
+            }, 1000);
         };
 
         const copyCopyToClipboard = () => {
             const el = document.getElementById('generated-copy');
-            el.select();
-            document.execCommand('copy');
-            showToast('Copiado para a área de transferência!', 'success');
+            el.select(); document.execCommand('copy');
+            showToast('Copiado!');
         };
 
-        // ============================================
-        // LÓGICA DE ACESSOS
-        // ============================================
+        // Acessos
         const renderAcessos = () => {
-            const tbody = document.getElementById('users-table-body');
-            tbody.innerHTML = state.users.map(u => `
+            document.getElementById('kpi-users-active').textContent = state.users.length;
+            document.getElementById('users-table-body').innerHTML = state.users.map(u => `
                 <tr class="table-row-hover transition-colors">
-                    <td class="px-6 py-4 flex items-center gap-3">
-                        <div class="initials-avatar w-8 h-8 text-xs">${getInitials(u.name)}</div>
-                        <span class="font-medium text-white">${u.name} ${u.email === 'marinasenhad@gmail.com' ? '<span class="text-[10px] text-indigo-400 ml-1">(Master)</span>' : ''}</span>
-                    </td>
+                    <td class="px-6 py-4 flex items-center gap-3"><div class="initials-avatar w-8 h-8 text-xs">${getInitials(u.name)}</div><span class="text-white">${u.name}</span></td>
                     <td class="px-6 py-4">${u.email}</td>
-                    <td class="px-6 py-4"><span class="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-2 py-1 rounded text-xs font-semibold">${u.role}</span></td>
-                    <td class="px-6 py-4 text-center text-slate-500">-</td>
-                    <td class="px-6 py-4 text-right">
-                        ${u.email !== 'marinasenhad@gmail.com' ? `<button onclick="revokeAccess(${u.id})" class="text-xs text-red-400 hover:text-red-300">Revogar</button>` : '<span class="text-xs text-slate-500">Bloqueado</span>'}
-                    </td>
+                    <td class="px-6 py-4">${u.role}</td>
+                    <td class="px-6 py-4 text-right">${u.email !== 'marinasenhad@gmail.com' ? `<button onclick="revokeAccess(${u.id})" class="text-red-400">Remover</button>` : 'Master'}</td>
                 </tr>
             `).join('');
         };
@@ -1196,25 +692,19 @@ Aqui está o código completo atualizado. Pode apagar o anterior e colar este:
         const grantAccess = () => {
             const name = document.getElementById('access-name').value.trim();
             const email = document.getElementById('access-email').value.trim();
-            const role = document.getElementById('access-role').value;
-
-            if(!name || !email) return showToast('Preencha nome e e-mail', 'error');
-            if(state.users.find(u => u.email === email)) return showToast('E-mail já cadastrado.', 'warning');
-
-            state.users.push({ id: Date.now(), name, email, role, password: 'seok' + new Date().getFullYear() });
-            saveState(); renderAcessos();
-            document.getElementById('access-name').value = ''; document.getElementById('access-email').value = '';
-            showToast('Acesso concedido com sucesso!', 'success');
+            if(!name || !email) return showToast('Preencha os campos', 'error');
+            
+            state.users.push({ id: Date.now(), name, email, role: document.getElementById('access-role').value, password: 'seok' + new Date().getFullYear() });
+            saveState(); renderAcessos(); showToast('Acesso concedido!');
         };
 
         const revokeAccess = (id) => {
-            if(confirm('Deseja remover este acesso?')) {
+            if(confirm('Remover acesso?')) {
                 state.users = state.users.filter(u => u.id !== id);
                 saveState(); renderAcessos();
             }
         };
 
-        // Utilitários de UI
         const showToast = (msg, type = 'success') => {
             const t = document.createElement('div');
             t.className = `toast ${type}`; t.textContent = msg;
