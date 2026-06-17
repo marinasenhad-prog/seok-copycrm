@@ -1,3 +1,8 @@
+Aqui está o código completo do arquivo integrado e pronto para ser copiado. Ele já inclui a lógica modificada no bloco `<script>` para garantir que o e-mail `marinasenhad@gmail.com` seja verificado e injetado automaticamente como usuário permitido na inicialização da página.
+
+Você pode copiar o código abaixo e salvá-lo como um arquivo `.html` (por exemplo, `index.html`) para subir no seu repositório do GitHub:
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -156,9 +161,7 @@
 </head>
 <body>
 
-    <!-- TELA DE LOGIN -->
     <div id="login-screen" class="min-h-screen flex flex-col items-center justify-center p-4 relative z-50">
-        <!-- Partículas de Fundo Estilizadas -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px]"></div>
             <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px]"></div>
@@ -195,12 +198,9 @@
         </div>
     </div>
 
-    <!-- APLICAÇÃO PRINCIPAL (Oculta até login) -->
     <div id="app" class="min-h-screen flex flex-col hidden">
         
-        <!-- HEADER NOVO PADRÃO -->
         <header class="glass border-b border-slate-700/50 sticky top-0 z-40 flex flex-col">
-            <!-- Top Bar -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center justify-between py-4">
                 
                 <div class="flex items-center gap-4">
@@ -212,7 +212,6 @@
                 </div>
 
                 <div class="flex items-center gap-6">
-                    <!-- Ações Rápidas -->
                     <div class="hidden md:flex gap-2">
                         <button class="px-3 py-1.5 rounded-lg border border-slate-600 text-xs font-medium text-slate-300 hover:bg-slate-800 transition flex items-center gap-2">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -224,7 +223,6 @@
                         </button>
                     </div>
 
-                    <!-- Perfil Logado -->
                     <div class="flex items-center gap-3 pl-6 border-l border-slate-700">
                         <div class="initials-avatar" id="logged-user-initials">MS</div>
                         <div class="hidden sm:block">
@@ -238,7 +236,6 @@
                 </div>
             </div>
 
-            <!-- Bottom Tabs Bar -->
             <div class="bg-slate-900/50 border-t border-slate-800">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto custom-scrollbar">
                     <button data-tab="dashboard" class="tab-btn-modern active" onclick="switchTab('dashboard')">
@@ -261,11 +258,9 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="flex-1">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-                <!-- TAB: DASHBOARD -->
                 <div id="dashboard-tab" class="tab-content">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         <div class="glass rounded-xl p-6 border-l-4 border-indigo-500 hover:scale-[1.02] transition-transform cursor-pointer" onclick="switchTab('pipeline')">
@@ -297,7 +292,6 @@
                     <div id="clients-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
                 </div>
 
-                <!-- TAB: PIPELINE -->
                 <div id="pipeline-tab" class="tab-content hidden">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-2xl font-bold text-white">Pipeline de Cópias</h2>
@@ -313,7 +307,6 @@
                     </div>
                 </div>
 
-                <!-- TAB: AI WORKSPACE -->
                 <div id="workspace-tab" class="tab-content hidden">
                     <h2 class="text-2xl font-bold text-white mb-6">Laboratório de Inteligência (AI Workspace)</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -343,14 +336,12 @@
                     </div>
                 </div>
 
-                <!-- TAB: ACESSOS (NOVA) -->
                 <div id="acessos-tab" class="tab-content hidden space-y-6">
                     <div>
                         <h2 class="text-2xl font-bold text-white mb-1">Gerenciamento de Acessos</h2>
                         <p class="text-sm text-slate-400">Controle quem pode acessar o CRM</p>
                     </div>
 
-                    <!-- Cards KPI -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="glass rounded-xl p-6 border border-slate-700">
                             <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Usuários Ativos</p>
@@ -362,9 +353,7 @@
                         </div>
                     </div>
 
-                    <!-- Formulários de Acesso -->
                     <div class="space-y-6">
-                        <!-- Bloco: Conceder Acesso -->
                         <div class="glass-panel rounded-xl p-6 border border-slate-700">
                             <h3 class="text-sm font-bold text-white mb-4">Conceder Acesso</h3>
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
@@ -389,14 +378,12 @@
                             </div>
                         </div>
 
-                        <!-- Bloco: Solicitações Pendentes (Aparece só se houver) -->
                         <div id="pending-requests-container" class="glass-panel rounded-xl p-6 border border-red-500/30 hidden">
                             <h3 class="text-sm font-bold text-red-400 mb-4">Solicitações de Acesso Pendentes</h3>
                             <div id="pending-list" class="space-y-3"></div>
                         </div>
                     </div>
 
-                    <!-- Tabela de Usuários -->
                     <div class="glass rounded-xl border border-slate-700 overflow-hidden mt-8">
                         <div class="p-6 border-b border-slate-700">
                             <h3 class="text-base font-bold text-white">Usuários com Acesso</h3>
@@ -413,8 +400,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="users-table-body" class="text-sm text-slate-300 divide-y divide-slate-700/50">
-                                    <!-- Preenchido via JS -->
-                                </tbody>
+                                    </tbody>
                             </table>
                         </div>
                     </div>
@@ -424,7 +410,6 @@
         </main>
     </div>
 
-    <!-- Modais Genéricos da Aplicação -->
     <div id="add-client-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center z-50 p-4">
         <div class="modal-content rounded-xl p-6 w-full max-w-md shadow-2xl"><h3 class="text-xl font-bold mb-4 text-white">Adicionar Novo Cliente</h3><div class="space-y-4"><div><label class="block text-sm font-medium mb-1 text-slate-300">Nome da Marca</label><input type="text" id="client-name" class="w-full px-3 py-2 rounded-lg text-sm"></div><div><label class="block text-sm font-medium mb-1 text-slate-300">Responsável (Owner)</label><input type="text" id="client-owner" class="w-full px-3 py-2 rounded-lg text-sm"></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-medium mb-1 text-slate-300">Deadline Copy</label><input type="date" id="client-copy-deadline" class="w-full px-3 py-2 rounded-lg text-sm"></div><div><label class="block text-sm font-medium mb-1 text-slate-300">Deadline Art</label><input type="date" id="client-art-deadline" class="w-full px-3 py-2 rounded-lg text-sm"></div></div></div><div class="flex gap-3 mt-8"><button class="btn-secondary flex-1" onclick="closeAddClientModal()">Cancelar</button><button class="btn-primary flex-1" onclick="addClient()">Salvar</button></div></div>
     </div>
@@ -432,7 +417,6 @@
         <div class="modal-content rounded-xl p-6 w-full max-w-md shadow-2xl"><h3 class="text-xl font-bold mb-4 text-white">Nova Copy (Pipeline)</h3><div class="space-y-4"><div><label class="block text-sm font-medium mb-1 text-slate-300">Título / Tema</label><input type="text" id="item-title" class="w-full px-3 py-2 rounded-lg text-sm"></div><div><label class="block text-sm font-medium mb-1 text-slate-300">Cliente Pertencente</label><select id="item-client" class="w-full px-3 py-2 rounded-lg text-sm"></select></div><div><label class="block text-sm font-medium mb-1 text-slate-300">Estágio Atual</label><select id="item-stage" class="w-full px-3 py-2 rounded-lg text-sm"><option value="0">To Define</option><option value="1">In Production</option><option value="2">In Creation (AI)</option><option value="3">Ready</option></select></div></div><div class="flex gap-3 mt-8"><button class="btn-secondary flex-1" onclick="closeAddItemModal()">Cancelar</button><button class="btn-primary flex-1" onclick="addPipelineItem()">Criar Task</button></div></div>
     </div>
 
-    <!-- Container de Notificações -->
     <div id="toast-container"></div>
 
     <script>
@@ -451,7 +435,7 @@
             isAuthenticated: false,
             currentUser: null,
             users: [
-                { id: 1, name: "Marina Senhad", email: "marinasenhad@gmail.com", role: "Admin", password: "Gio@2026" } // Usuário Mestre Hardcoded[cite: 1]
+                { id: 1, name: "Marina Senhad", email: "marinasenhad@gmail.com", role: "Admin", password: "Gio@2026" } // Usuário Mestre Hardcoded
             ],
             pendingRequests: [],
             currentTab: 'dashboard',
@@ -467,6 +451,7 @@
             if (saved) {
                 const parsed = JSON.parse(saved);
                 Object.assign(state, parsed);
+                
                 // Força usuário mestre na base sempre por segurança
                 if (!state.users.find(u => u.email === 'marinasenhad@gmail.com')) {
                     state.users.push({ id: 1, name: "Marina Senhad", email: "marinasenhad@gmail.com", role: "Admin", password: "Gio@2026" });
@@ -475,8 +460,24 @@
                 // Dados Iniciais Falsos para o CRM não começar vazio
                 state.clients = [ { id: 1, name: "SEOK", owner: "Equipe", copyDeadline: "2026-07-01", artDeadline: "2026-07-05" } ];
                 state.pipelineItems = [ { id: 101, title: "Campanha Diagnóstico", clientId: 1, stage: 1 } ];
-                saveState();
             }
+
+            // Injeta automaticamente o novo usuário permitido se ele não existir na base
+            const targetEmail = "marinasenhad@gmail.com";
+            if (!state.users.find(u => u.email === targetEmail)) {
+                state.users.push({
+                    id: Date.now(),
+                    name: "Marina Convidado",
+                    email: targetEmail,
+                    role: "Usuário",
+                    password: "seok" + new Date().getFullYear() // Senha padrão estruturada (ex: seok2026)
+                });
+            }
+
+            // Remove das solicitações pendentes caso estivesse lá
+            state.pendingRequests = state.pendingRequests.filter(req => req !== targetEmail);
+
+            saveState();
             checkAuth();
         };
 
@@ -488,7 +489,7 @@
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app').classList.remove('hidden');
                 
-                // Configura Header[cite: 1]
+                // Configura Header
                 document.getElementById('logged-user-name').textContent = state.currentUser.name;
                 document.getElementById('logged-user-initials').textContent = getInitials(state.currentUser.name);
                 
@@ -504,7 +505,7 @@
             const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value;
 
-            const user = state.users.find(u => u.email === email && u.password === pass);[cite: 1]
+            const user = state.users.find(u => u.email === email && u.password === pass);
 
             if (user) {
                 state.isAuthenticated = true;
@@ -528,7 +529,7 @@
 
         const handleRequestAccess = (e) => {
             e.preventDefault();
-            const email = document.getElementById('request-email').value.trim();[cite: 1]
+            const email = document.getElementById('request-email').value.trim();
             
             if(state.users.find(u => u.email === email)) {
                 return showToast('E-mail já cadastrado.', 'warning');
@@ -567,7 +568,7 @@
                 document.getElementById('pending-requests-container').classList.add('hidden');
             }
 
-            // Tabela de Usuários[cite: 1]
+            // Tabela de Usuários
             const tbody = document.getElementById('users-table-body');
             tbody.innerHTML = state.users.map(u => `
                 <tr class="table-row-hover transition-colors">
@@ -586,9 +587,9 @@
         };
 
         const grantAccess = () => {
-            const name = document.getElementById('access-name').value.trim();[cite: 1]
-            const email = document.getElementById('access-email').value.trim();[cite: 1]
-            const role = document.getElementById('access-role').value;[cite: 1]
+            const name = document.getElementById('access-name').value.trim();
+            const email = document.getElementById('access-email').value.trim();
+            const role = document.getElementById('access-role').value;
 
             if(!name || !email) return showToast('Preencha nome e e-mail', 'error');
             if(state.users.find(u => u.email === email)) return showToast('E-mail já possui acesso.', 'warning');
@@ -640,9 +641,6 @@
             saveState();
         };
 
-        // Funções omitidas aqui por brevidade (já implementadas no arquivo anterior e apenas adaptadas estruturalmente)
-        // Copiando funções centrais para manter o código executável sem quebras:
-
         const renderDashboard = () => {
             document.getElementById('kpi-clients').textContent = state.clients.length;
             const grid = document.getElementById('clients-grid');
@@ -678,7 +676,6 @@
         const openAddItemModal = () => document.getElementById('add-item-modal').classList.remove('hidden');
         const closeAddItemModal = () => document.getElementById('add-item-modal').classList.add('hidden');
 
-        // Toasts Utility
         const showToast = (msg, type = 'success') => {
             const t = document.createElement('div');
             t.className = `toast ${type}`; t.textContent = msg;
@@ -686,8 +683,9 @@
             setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
         };
 
-        // Init
         document.addEventListener('DOMContentLoaded', loadState);
     </script>
 </body>
 </html>
+
+```
